@@ -1,0 +1,20 @@
+name: Test Templates
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Build template container
+        run: |
+          cd src/lua/.devcontainer
+          docker build -t lua-devcontainer:test .
+
+      - name: Run template tests
+        run: |
+          docker run --rm lua-devcontainer:test bash -c "$(cat test/lua/test.sh)"

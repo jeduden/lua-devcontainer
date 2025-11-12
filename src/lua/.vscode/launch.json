@@ -1,0 +1,65 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "lua-local",
+      "request": "launch",
+      "name": "Debug Current File",
+      "program": {
+        "lua": "lua5.4",
+        "file": "${file}"
+      },
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "lua-local",
+      "request": "launch",
+      "name": "Debug (Lua 5.4)",
+      "program": {
+        "lua": "lua5.4",
+        "file": "${workspaceFolder}/test/run.lua"
+      },
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "lua-local",
+      "request": "launch",
+      "name": "Debug (Lua 5.3)",
+      "program": {
+        "lua": "lua5.3",
+        "file": "${workspaceFolder}/test/run.lua"
+      },
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "lua-local",
+      "request": "launch",
+      "name": "Debug (Lua 5.2)",
+      "program": {
+        "lua": "lua5.2",
+        "file": "${workspaceFolder}/test/run.lua"
+      },
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "lua-local",
+      "request": "launch",
+      "name": "Debug (Lua 5.1)",
+      "program": {
+        "lua": "lua5.1",
+        "file": "${workspaceFolder}/test/run.lua"
+      },
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "lua-local",
+      "request": "launch",
+      "name": "Debug (LuaJIT)",
+      "program": {
+        "lua": "luajit",
+        "file": "${workspaceFolder}/test/run.lua"
+      },
+      "cwd": "${workspaceFolder}"
+    }
+  ]
+}

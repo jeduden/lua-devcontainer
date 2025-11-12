@@ -1,0 +1,11 @@
+{
+  "id": "lua",
+  "version": "1.0.0",
+  "name": "Lua Multi-Version Development",
+  "description": "Complete Lua development environment with all versions (5.1-5.4, LuaJIT), LuaRocks, Language Server, and debugging support",
+  "documentationURL": "https://github.com/jeduden/lua-devcontainer",
+  "licenseURL": "https://github.com/jeduden/lua-devcontainer/blob/main/LICENSE",
+  "publisher": "jeduden",
+  "keywords": ["lua", "lua5.1", "lua5.2", "lua5.3", "lua5.4", "luajit", "luarocks", "multiversion"],
+  "platforms": ["Any"]
+}
