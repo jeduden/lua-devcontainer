@@ -1,0 +1,37 @@
+name: Test
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test-all:
+    name: Test All Lua Versions
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          load: true
+          tags: lua-devcontainer:test
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Test Lua with all versions
+        run: |
+          docker run --rm -v $PWD/test:/workspace/test lua-devcontainer:test vl all lua test/run.lua
+
+      - name: Verify LuaRocks with all versions
+        run: |
+          docker run --rm lua-devcontainer:test vl all luarocks --version
+
+      - name: Test package isolation matrix
+        run: |
+          docker run --rm -v $PWD/test:/workspace/test lua-devcontainer:test bash test/test_package_isolation_matrix.sh

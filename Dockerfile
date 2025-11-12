@@ -1,0 +1,35 @@
+FROM alpine:3.19
+
+# Install all Lua versions, LuaRocks, and development tools in a single layer
+RUN apk add --no-cache \
+    # All Lua versions
+    lua5.1 lua5.1-dev lua5.1-libs \
+    lua5.2 lua5.2-dev lua5.2-libs \
+    lua5.3 lua5.3-dev lua5.3-libs \
+    lua5.4 lua5.4-dev lua5.4-libs \
+    luajit luajit-dev \
+    # LuaRocks from Alpine repos (supports all Lua versions)
+    luarocks5.1 luarocks5.2 luarocks5.3 luarocks5.4 \
+    # Development tools (runtime)
+    bash git \
+    # Build dependencies (needed for compiling rocks)
+    gcc g++ musl-dev libc-dev make readline-dev \
+    curl wget unzip tar gzip \
+    cmake ca-certificates \
+    pkgconf linux-headers
+
+# Create symlinks for luarocks commands without version suffix
+RUN ln -sf /usr/bin/luarocks-5.1 /usr/local/bin/luarocks-5.1 && \
+    ln -sf /usr/bin/luarocks-5.2 /usr/local/bin/luarocks-5.2 && \
+    ln -sf /usr/bin/luarocks-5.3 /usr/local/bin/luarocks-5.3 && \
+    ln -sf /usr/bin/luarocks-5.4 /usr/local/bin/luarocks-5.4
+
+# Copy and install vl helper command
+COPY vl /usr/local/bin/vl
+RUN chmod +x /usr/local/bin/vl
+
+# Set working directory
+WORKDIR /workspace
+
+# Default command
+CMD ["/bin/bash"]

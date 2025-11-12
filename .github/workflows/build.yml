@@ -1,0 +1,94 @@
+name: Build and Publish
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*.*.*'
+  pull_request:
+  schedule:
+    # Run weekly on Sundays at 00:00 UTC for security updates
+    - cron: '0 0 * * 0'
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Container Registry
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=raw,value=latest,enable=${{ startsWith(github.ref, 'refs/tags/') }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          # Only push/publish on tags (build runs on all events for testing)
+          push: ${{ startsWith(github.ref, 'refs/tags/') }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build local image for size inspection
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          platforms: linux/amd64
+          load: true
+          tags: lua-devcontainer:size-check
+          cache-from: type=gha
+
+      - name: Report container size
+        run: |
+          echo "========================================="
+          echo "Container Size Report"
+          echo "========================================="
+          docker images lua-devcontainer:size-check --format "Size: {{.Size}}"
+          SIZE=$(docker images lua-devcontainer:size-check --format "{{.Size}}")
+          echo "Final size: $SIZE"
+          echo "========================================="
+
+          # Write to GitHub Actions job summary for easy access
+          echo "## Container Size Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Final Image Size:** \`$SIZE\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Based on Alpine 3.19 with:" >> $GITHUB_STEP_SUMMARY
+          echo "- Lua 5.1, 5.2, 5.3, 5.4, and LuaJIT" >> $GITHUB_STEP_SUMMARY
+          echo "- LuaRocks for all versions" >> $GITHUB_STEP_SUMMARY
+          echo "- Development tools (gcc, make, git, etc.)" >> $GITHUB_STEP_SUMMARY

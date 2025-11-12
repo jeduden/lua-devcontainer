@@ -1,0 +1,17 @@
+{
+  "name": "Lua Multi-Version Development",
+  "build": {
+    "dockerfile": "../Dockerfile",
+    "context": ".."
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "sumneko.lua",
+        "actboy168.lua-debug"
+      ]
+    }
+  },
+  "postCreateCommand": "lua5.4 -e 'print(\"Lua devcontainer ready!\")'",
+  "remoteUser": "root"
+}

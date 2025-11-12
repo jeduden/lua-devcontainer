@@ -1,0 +1,20 @@
+# Git files
+.git
+.gitignore
+.github
+
+# DevContainer config (not needed in image)
+.devcontainer
+
+# Documentation
+README.md
+LICENSE
+
+# Test files (will be mounted at runtime)
+test
+
+# Build artifacts
+*.o
+*.so
+*.a
+.DS_Store
