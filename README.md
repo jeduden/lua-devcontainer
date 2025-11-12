@@ -85,7 +85,10 @@ jobs:
 
 **Version syntax**: `all`, `5.1`, `5.2`, `5.3`, `5.4`, `jit`, or comma-separated (e.g., `5.1,5.4,jit`)
 
-**Note**: LuaJIT uses the Lua 5.1 API, so `vl jit luarocks` will use `luarocks-5.1`
+**Important Notes**:
+- LuaJIT uses the Lua 5.1 API, so `vl jit luarocks` will use `luarocks-5.1`
+- Each Lua version has isolated packages - installing for one version doesn't make it available to others
+- Exception: Lua 5.1 and LuaJIT share the same package directory (both use `luarocks-5.1`)
 
 ### Direct Access Commands
 
@@ -138,6 +141,30 @@ vl jit luarocks install luasocket
 # Or install for a single version directly
 luarocks-5.4 install luacheck
 luarocks-5.1 install luasocket  # Works for both Lua 5.1 and LuaJIT
+```
+
+### Understanding Package Isolation
+
+**Important**: Each Lua version has its own isolated package directory:
+- Installing for Lua 5.4 does NOT make the package available to Lua 5.3
+- Installing for Lua 5.2 does NOT make the package available to Lua 5.3
+- **Exception**: Lua 5.1 and LuaJIT share packages (both use `luarocks-5.1`)
+
+```bash
+# Install for Lua 5.4 only - NOT available to other versions
+luarocks-5.4 install luasocket
+lua5.4 -e "require('socket')"  # ✓ Works
+lua5.3 -e "require('socket')"  # ✗ Error: module not found
+
+# Install for Lua 5.1 - available to BOTH Lua 5.1 AND LuaJIT
+luarocks-5.1 install luasocket
+lua5.1 -e "require('socket')"   # ✓ Works
+luajit -e "require('socket')"    # ✓ Works (shared with 5.1)
+lua5.4 -e "require('socket')"    # ✗ Error: module not found
+
+# To make available everywhere, install for all versions
+vl all luarocks install luasocket
+# This installs separately for: 5.1, 5.2, 5.3, 5.4 (and 5.1 covers LuaJIT)
 ```
 
 ### Check Versions

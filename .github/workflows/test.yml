@@ -31,3 +31,19 @@ jobs:
       - name: Verify LuaRocks with all versions
         run: |
           docker run --rm lua-devcontainer:test vl all luarocks --version
+
+      - name: Test package isolation between versions
+        run: |
+          # Install a package for Lua 5.4 only
+          docker run --rm lua-devcontainer:test luarocks-5.4 install luafilesystem
+
+          # Verify it works with Lua 5.4
+          docker run --rm lua-devcontainer:test lua5.4 -e "require('lfs'); print('✓ lfs available in Lua 5.4')"
+
+          # Verify it's NOT available in Lua 5.3 (demonstrates isolation)
+          docker run --rm lua-devcontainer:test lua5.3 -e "local ok = pcall(require, 'lfs'); if not ok then print('✓ lfs NOT in Lua 5.3 (isolated)') else error('Package should not be available') end"
+
+          # Install for Lua 5.1 and verify it's shared with LuaJIT
+          docker run --rm lua-devcontainer:test luarocks-5.1 install luafilesystem
+          docker run --rm lua-devcontainer:test lua5.1 -e "require('lfs'); print('✓ lfs available in Lua 5.1')"
+          docker run --rm lua-devcontainer:test luajit -e "require('lfs'); print('✓ lfs available in LuaJIT (shared with 5.1)')"
