@@ -22,7 +22,22 @@ jobs:
 
       - name: Extract version from tag
         id: get_version
-        run: echo "version=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/v}
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+
+      - name: Update template version
+        run: |
+          jq --arg version "${{ steps.get_version.outputs.version }}" \
+            '.version = $version' \
+            src/lua/devcontainer-template.json > /tmp/template.json
+          mv /tmp/template.json src/lua/devcontainer-template.json
+
+          jq --arg image "ghcr.io/jeduden/lua-devcontainer:${{ steps.get_version.outputs.tag }}" \
+            '.image = $image' \
+            src/lua/.devcontainer/devcontainer.json > /tmp/devcontainer.json
+          mv /tmp/devcontainer.json src/lua/.devcontainer/devcontainer.json
 
       - name: Publish Templates
         uses: devcontainers/action@1082abd5d2bf3a11abccba70eef98df068277772 # v1.4.3

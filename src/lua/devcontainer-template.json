@@ -1,5 +1,5 @@
 {
-  "id": "lua",
+  "id": "lua-multiversion",
   "version": "1.0.0",
   "name": "Lua Multi-Version Development",
   "description": "Complete Lua development environment with all versions (5.1-5.4, LuaJIT), LuaRocks, Language Server, and debugging support",
