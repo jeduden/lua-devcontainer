@@ -105,7 +105,7 @@ The Language Server is pre-configured for Lua 5.4. To change it, modify `.devcon
 
 **Note for LuaJIT users**: LuaJIT uses the Lua 5.1 API, so set `"Lua.runtime.version": "Lua 5.1"` and use the 5.1 library paths.
 
-#### Option 2: Use Published Image
+#### Option 2: Use as a Simple Container
 
 Create `.devcontainer/devcontainer.json` in your project:
 ```json
@@ -114,7 +114,27 @@ Create `.devcontainer/devcontainer.json` in your project:
 }
 ```
 
-**Note**: A Dev Container Template with configurable options will be published soon, allowing you to select your preferred Lua version during setup.
+#### Option 3: Use Dev Container Template (Recommended for New Projects)
+
+**Note**: This template will be available once published to the Dev Container registry.
+
+When creating a new project with this template:
+
+1. In VS Code, open the Command Palette (Ctrl+Shift+P / Cmd+Shift+P)
+2. Run "Dev Containers: Add Dev Container Configuration Files..."
+3. Search for "Lua Multi-Version Development"
+4. **You'll be prompted to select your default Lua version:**
+   - Choose `5.4` for the latest Lua (recommended)
+   - Choose `5.3` for Lua 5.3
+   - Choose `5.2` for Lua 5.2
+   - Choose `5.1` for Lua 5.1 or LuaJIT compatibility
+
+This selection automatically configures:
+- **Language Server**: Sets `Lua.runtime.version` to match your choice
+- **Library Paths**: Configures `Lua.workspace.library` for the correct version
+- **IntelliSense**: Provides accurate code completion for your Lua version
+
+All Lua versions (5.1, 5.2, 5.3, 5.4, LuaJIT) remain available in the container regardless of your LSP configuration choice.
 
 ### Use in GitHub Actions
 ```yaml
