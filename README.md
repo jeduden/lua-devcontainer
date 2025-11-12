@@ -12,7 +12,7 @@ All Lua versions in a single, fast development container. No version switching n
 - ✅ **Unified Command**: `vl` command to run lua/luarocks with any version combination
 - ✅ **Direct Access**: Use `lua5.1`, `lua5.2`, `lua5.3`, `lua5.4`, or `luajit` directly
 - ✅ **Development Tools**: gcc, make, git, cmake, and more pre-installed
-- ✅ **Small & Fast**: Alpine-based for minimal size (~200MB)
+- ✅ **Small & Fast**: Alpine-based for minimal size (~200MB, [exact size in Build workflow](https://github.com/jeduden/lua-devcontainer/actions/workflows/build.yml))
 - ✅ **Multi-Architecture**: Supports amd64 and arm64
 - ✅ **Weekly Updates**: Automated security updates
 
