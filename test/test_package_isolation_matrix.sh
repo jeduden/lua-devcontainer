@@ -51,6 +51,14 @@ for INSTALL_VERSION in 5.1 5.2 5.3 5.4 jit; do
         vl $TEST_VERSION lua $TEST_SCRIPT $TEST_VERSION $EXPECTED
     done
 
+    # Clean up: remove the package for next iteration
+    echo "Removing $PACKAGE from version $INSTALL_VERSION..."
+    if [ "$INSTALL_VERSION" = "jit" ]; then
+        luarocks-5.1 remove $PACKAGE > /dev/null 2>&1
+    else
+        luarocks-${INSTALL_VERSION} remove $PACKAGE > /dev/null 2>&1
+    fi
+
     echo ""
 done
 
