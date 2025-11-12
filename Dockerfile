@@ -10,9 +10,11 @@ RUN apk add --no-cache \
     luajit luajit-dev \
     # Development tools (runtime)
     bash git \
-    # Build dependencies (needed for LuaRocks)
-    gcc musl-dev make readline-dev curl wget unzip \
-    cmake ca-certificates
+    # Build dependencies (needed for LuaRocks and compiling rocks)
+    gcc g++ musl-dev libc-dev make readline-dev \
+    curl wget unzip tar gzip \
+    cmake ca-certificates \
+    pkgconfig linux-headers
 
 # Install LuaRocks for all Lua versions in a single layer
 ENV LUAROCKS_VERSION=3.11.1
@@ -25,28 +27,36 @@ RUN set -ex && \
         --lua-version=5.1 \
         --versioned-rocks-dir \
         --with-lua=/usr \
-        --with-lua-include=/usr/include/lua5.1 && \
+        --with-lua-bin=/usr/bin \
+        --with-lua-include=/usr/include/lua5.1 \
+        --with-lua-lib=/usr/lib && \
     make && make install && make clean && \
     # Install for Lua 5.2
     ./configure \
         --lua-version=5.2 \
         --versioned-rocks-dir \
         --with-lua=/usr \
-        --with-lua-include=/usr/include/lua5.2 && \
+        --with-lua-bin=/usr/bin \
+        --with-lua-include=/usr/include/lua5.2 \
+        --with-lua-lib=/usr/lib && \
     make && make install && make clean && \
     # Install for Lua 5.3
     ./configure \
         --lua-version=5.3 \
         --versioned-rocks-dir \
         --with-lua=/usr \
-        --with-lua-include=/usr/include/lua5.3 && \
+        --with-lua-bin=/usr/bin \
+        --with-lua-include=/usr/include/lua5.3 \
+        --with-lua-lib=/usr/lib && \
     make && make install && make clean && \
     # Install for Lua 5.4
     ./configure \
         --lua-version=5.4 \
         --versioned-rocks-dir \
         --with-lua=/usr \
-        --with-lua-include=/usr/include/lua5.4 && \
+        --with-lua-bin=/usr/bin \
+        --with-lua-include=/usr/include/lua5.4 \
+        --with-lua-lib=/usr/lib && \
     make && make install && \
     # Cleanup
     cd .. && rm -rf luarocks-${LUAROCKS_VERSION}*
