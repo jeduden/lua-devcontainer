@@ -12,6 +12,7 @@ All Lua versions in a single, fast development container. No version switching n
 - ✅ **Direct Access**: Use `lua5.1`, `lua5.2`, `lua5.3`, `lua5.4`, or `luajit` directly
 - ✅ **Test Helper**: `test-all-lua` command runs scripts with all versions
 - ✅ **Development Tools**: gcc, make, git, cmake, and more pre-installed
+- ✅ **Small & Fast**: Alpine-based for minimal size (~200MB)
 - ✅ **Multi-Architecture**: Supports amd64 and arm64
 - ✅ **Weekly Updates**: Automated security updates
 
@@ -130,6 +131,16 @@ jobs:
       - uses: actions/checkout@v4
       - run: test-all-lua test/run.lua
 ```
+
+## Container Architecture
+
+- **Base Image**: Alpine Linux 3.19 (~5MB base)
+- **Total Size**: ~200MB (compressed)
+- **Layers**: Optimized to minimize layer count
+- **Package Manager**: apk (Alpine), no cache retention
+- **Build Strategy**: Single-layer installs for maximum efficiency
+
+The container is optimized for size without sacrificing functionality. All Lua versions and build tools are included while keeping the footprint minimal.
 
 ## License
 
