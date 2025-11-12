@@ -11,7 +11,7 @@
   "options": {
     "defaultLuaVersion": {
       "type": "string",
-      "description": "Default Lua version for Language Server configuration",
+      "description": "Default Lua version for Language Server configuration (use 5.1 for LuaJIT compatibility)",
       "proposals": ["5.4", "5.3", "5.2", "5.1"],
       "default": "5.4"
     }
