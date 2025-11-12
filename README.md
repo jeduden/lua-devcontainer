@@ -209,7 +209,7 @@ jobs:
 ## Container Architecture
 
 - **Base Image**: Alpine Linux 3.19 (~5MB base)
-- **Total Size**: ~200MB (compressed)
+- **Total Size**: ~200MB ([exact size in Build workflow](https://github.com/jeduden/lua-devcontainer/actions/workflows/build.yml))
 - **Layers**: Optimized to minimize layer count
 - **Package Manager**: apk (Alpine), no cache retention
 - **Build Strategy**: Single-layer installs for maximum efficiency
