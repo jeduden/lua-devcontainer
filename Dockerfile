@@ -25,7 +25,11 @@ RUN ln -sf /usr/bin/luarocks-5.1 /usr/local/bin/luarocks-5.1 && \
     ln -sf /usr/bin/luarocks-5.4 /usr/local/bin/luarocks-5.4
 
 # Install Lua Language Server for sumneko.lua extension
-RUN curl -L https://github.com/LuaLS/lua-language-server/releases/download/3.7.4/lua-language-server-3.7.4-linux-x64.tar.gz -o /tmp/lua-ls.tar.gz && \
+RUN ARCH=$(uname -m) && \
+    if [ "$ARCH" = "x86_64" ]; then ARCH_NAME="x64"; \
+    elif [ "$ARCH" = "aarch64" ]; then ARCH_NAME="arm64"; \
+    else echo "Unsupported architecture: $ARCH" && exit 1; fi && \
+    curl -L https://github.com/LuaLS/lua-language-server/releases/download/3.7.4/lua-language-server-3.7.4-linux-$ARCH_NAME.tar.gz -o /tmp/lua-ls.tar.gz && \
     mkdir -p /opt/lua-language-server && \
     tar -xzf /tmp/lua-ls.tar.gz -C /opt/lua-language-server && \
     ln -sf /opt/lua-language-server/bin/lua-language-server /usr/local/bin/lua-language-server && \
