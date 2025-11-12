@@ -31,6 +31,7 @@ jobs:
           VERSION: ${{ steps.get_version.outputs.version }}
           TAG: ${{ steps.get_version.outputs.tag }}
         run: |
+          set -euo pipefail
           jq --arg version "$VERSION" \
             '.version = $version' \
             src/lua/devcontainer-template.json > /tmp/template.json
