@@ -1,0 +1,29 @@
+name: Release Templates
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
+        with:
+          persist-credentials: false
+
+      - name: Publish Templates
+        uses: devcontainers/action@1082abd5d2bf3a11abccba70eef98df068277772 # v1.4.3
+        with:
+          publish-templates: "true"
+          base-path-to-templates: "./src"
+          generate-docs: "true"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

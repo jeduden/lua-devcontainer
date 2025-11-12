@@ -12,6 +12,8 @@ All Lua versions in a single, fast development container. No version switching n
 - ✅ **Unified Command**: `vl` command to run lua/luarocks with any version combination
 - ✅ **Direct Access**: Use `lua5.1`, `lua5.2`, `lua5.3`, `lua5.4`, or `luajit` directly
 - ✅ **Development Tools**: gcc, make, git, cmake, and more pre-installed
+- ✅ **Lua Language Server**: IntelliSense, hover docs, and diagnostics built-in
+- ✅ **Debugging Support**: Debug with any Lua version including LuaJIT
 - ✅ **Small & Fast**: Alpine-based for minimal size (~310MB, [exact size in Build workflow](https://github.com/jeduden/lua-devcontainer/actions/workflows/build.yml))
 - ✅ **Multi-Architecture**: Supports amd64 and arm64
 - ✅ **Weekly Updates**: Automated security updates
@@ -38,12 +40,101 @@ docker run -v $PWD:/workspace ghcr.io/jeduden/lua-devcontainer lua5.4 script.lua
 
 ### Use as DevContainer
 
-Create `.devcontainer/devcontainer.json`:
+#### Option 1: Clone and Open in VS Code (Recommended for Development)
+
+Clone this repository and open it in VS Code with the Dev Containers extension:
+
+```bash
+git clone https://github.com/jeduden/lua-devcontainer
+cd lua-devcontainer
+code .
+```
+
+When prompted, click "Reopen in Container". This gives you a complete Lua development environment with:
+
+- **Lua Language Server (LuaLS)**: Automatic IntelliSense, hover documentation, diagnostics, and code completion
+- **Lua Debugger**: Full debugging support with breakpoints, step-through, and variable inspection
+- **All Lua Versions**: Pre-configured to use Lua 5.4 by default, with all versions (5.1, 5.2, 5.3, 5.4, LuaJIT) available
+
+**Debugging with Different Lua Versions:**
+
+The container includes the `actboy168.lua-debug` extension. To debug with any Lua version:
+
+1. Open the Run and Debug panel (Ctrl+Shift+D / Cmd+Shift+D)
+2. Click "create a launch.json file"
+3. Choose "Lua Debug"
+4. Configure your interpreter:
+
+```json
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "lua",
+      "request": "launch",
+      "name": "Debug with Lua 5.4",
+      "program": "${file}",
+      "luaRuntime": "lua5.4"
+    },
+    {
+      "type": "lua",
+      "request": "launch",
+      "name": "Debug with LuaJIT",
+      "program": "${file}",
+      "luaRuntime": "luajit"
+    }
+  ]
+}
+```
+
+Available runtimes: `lua5.1`, `lua5.2`, `lua5.3`, `lua5.4`, `luajit`
+
+**Changing LSP Lua Version:**
+
+The Language Server is pre-configured for Lua 5.4. To change it, modify `.devcontainer/devcontainer.json`:
+
+```json
+"settings": {
+  "Lua.runtime.version": "Lua 5.1",  // Change to 5.1, 5.2, 5.3, or 5.4
+  "Lua.workspace.library": [
+    "/usr/share/lua/5.1",  // Update paths to match version
+    "/usr/lib/lua/5.1"
+  ]
+}
+```
+
+**Note for LuaJIT users**: LuaJIT uses the Lua 5.1 API, so set `"Lua.runtime.version": "Lua 5.1"` and use the 5.1 library paths.
+
+#### Option 2: Use as a Simple Container
+
+Create `.devcontainer/devcontainer.json` in your project:
 ```json
 {
   "image": "ghcr.io/jeduden/lua-devcontainer:latest"
 }
 ```
+
+#### Option 3: Use Dev Container Template (Recommended for New Projects)
+
+**Note**: This template will be available once published to the Dev Container registry.
+
+When creating a new project with this template:
+
+1. In VS Code, open the Command Palette (Ctrl+Shift+P / Cmd+Shift+P)
+2. Run "Dev Containers: Add Dev Container Configuration Files..."
+3. Search for "Lua Multi-Version Development"
+4. **You'll be prompted to select your default Lua version:**
+   - Choose `5.4` for the latest Lua (recommended)
+   - Choose `5.3` for Lua 5.3
+   - Choose `5.2` for Lua 5.2
+   - Choose `5.1` for Lua 5.1 or LuaJIT compatibility
+
+This selection automatically configures:
+- **Language Server**: Sets `Lua.runtime.version` to match your choice
+- **Library Paths**: Configures `Lua.workspace.library` for the correct version
+- **IntelliSense**: Provides accurate code completion for your Lua version
+
+All Lua versions (5.1, 5.2, 5.3, 5.4, LuaJIT) remain available in the container regardless of your LSP configuration choice.
 
 ### Use in GitHub Actions
 ```yaml

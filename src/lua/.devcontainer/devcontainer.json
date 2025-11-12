@@ -1,9 +1,6 @@
 {
   "name": "Lua Multi-Version Development",
-  "build": {
-    "dockerfile": "../Dockerfile",
-    "context": ".."
-  },
+  "image": "ghcr.io/jeduden/lua-devcontainer:latest",
   "customizations": {
     "vscode": {
       "extensions": [
@@ -11,14 +8,14 @@
         "actboy168.lua-debug"
       ],
       "settings": {
-        "Lua.runtime.version": "Lua 5.4",
+        "Lua.runtime.version": "Lua ${templateOption:defaultLuaVersion}",
         "Lua.runtime.path": [
           "?.lua",
           "?/init.lua"
         ],
         "Lua.workspace.library": [
-          "/usr/share/lua/5.4",
-          "/usr/lib/lua/5.4"
+          "/usr/share/lua/${templateOption:defaultLuaVersion}",
+          "/usr/lib/lua/${templateOption:defaultLuaVersion}"
         ],
         "Lua.telemetry.enable": false
       }
