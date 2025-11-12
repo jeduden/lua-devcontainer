@@ -82,3 +82,13 @@ jobs:
           SIZE=$(docker images lua-devcontainer:size-check --format "{{.Size}}")
           echo "Final size: $SIZE"
           echo "========================================="
+
+          # Write to GitHub Actions job summary for easy access
+          echo "## Container Size Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Final Image Size:** \`$SIZE\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Based on Alpine 3.19 with:" >> $GITHUB_STEP_SUMMARY
+          echo "- Lua 5.1, 5.2, 5.3, 5.4, and LuaJIT" >> $GITHUB_STEP_SUMMARY
+          echo "- LuaRocks for all versions" >> $GITHUB_STEP_SUMMARY
+          echo "- Development tools (gcc, make, git, etc.)" >> $GITHUB_STEP_SUMMARY
