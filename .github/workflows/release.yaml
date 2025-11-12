@@ -2,7 +2,8 @@ name: Release Templates
 
 on:
   push:
-    branches: [main]
+    tags:
+      - 'v*'
   workflow_dispatch:
 
 permissions: {}
@@ -19,11 +20,16 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Extract version from tag
+        id: get_version
+        run: echo "version=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+
       - name: Publish Templates
         uses: devcontainers/action@1082abd5d2bf3a11abccba70eef98df068277772 # v1.4.3
         with:
           publish-templates: "true"
           base-path-to-templates: "./src"
           generate-docs: "true"
+          oci-registry: ghcr.io
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
