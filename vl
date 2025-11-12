@@ -27,6 +27,7 @@ if [ $# -lt 2 ]; then
     echo "  vl 5.1,5.4 luarocks install pkg  # Install package for Lua 5.1 and 5.4"
     echo "  vl 5.3 lua -e 'print(_VERSION)'  # Run inline Lua code with 5.3"
     echo "  vl jit lua script.lua            # Run with LuaJIT"
+    echo "  vl jit luarocks install pkg      # Install for LuaJIT (uses luarocks-5.1)"
     exit 1
 fi
 
@@ -66,8 +67,8 @@ for VERSION in "${VERSIONS[@]}"; do
         if [ "$COMMAND" = "lua" ]; then
             EXECUTABLE="luajit"
         else
-            echo -e "${YELLOW}⚠ LuaJIT doesn't have a separate luarocks, skipping${NC}"
-            continue
+            # LuaJIT uses Lua 5.1 API, so use luarocks-5.1
+            EXECUTABLE="luarocks-5.1"
         fi
     else
         if [ "$COMMAND" = "lua" ]; then

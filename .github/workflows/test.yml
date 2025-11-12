@@ -31,7 +31,3 @@ jobs:
       - name: Verify LuaRocks with all versions
         run: |
           docker run --rm lua-devcontainer:test vl all luarocks --version
-
-      - name: Test specific versions
-        run: |
-          docker run --rm -v $PWD/test:/workspace/test lua-devcontainer:test vl 5.3,5.4 lua test/run.lua

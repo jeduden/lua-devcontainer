@@ -85,6 +85,8 @@ jobs:
 
 **Version syntax**: `all`, `5.1`, `5.2`, `5.3`, `5.4`, `jit`, or comma-separated (e.g., `5.1,5.4,jit`)
 
+**Note**: LuaJIT uses the Lua 5.1 API, so `vl jit luarocks` will use `luarocks-5.1`
+
 ### Direct Access Commands
 
 | Command | Description |
@@ -124,14 +126,18 @@ vl 5.4,jit lua my_script.lua
 
 ### Install LuaRocks Packages
 ```bash
-# Install for all Lua versions
+# Install for all Lua versions (including LuaJIT via luarocks-5.1)
 vl all luarocks install luacheck
 
 # Install for specific versions only
 vl 5.3,5.4 luarocks install luasocket
 
+# Install for LuaJIT (uses luarocks-5.1)
+vl jit luarocks install luasocket
+
 # Or install for a single version directly
 luarocks-5.4 install luacheck
+luarocks-5.1 install luasocket  # Works for both Lua 5.1 and LuaJIT
 ```
 
 ### Check Versions
