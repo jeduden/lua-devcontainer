@@ -1,48 +1,17 @@
 #!/bin/bash
 # test-all-lua - Run a Lua script with all available Lua versions
+# This is a backwards-compatible wrapper around 'vl all lua'
 
 set -e
 
 if [ $# -eq 0 ]; then
     echo "Usage: test-all-lua <script.lua> [args...]"
     echo "Runs the specified Lua script with all available Lua versions"
-    exit 1
-fi
-
-SCRIPT="$1"
-shift
-ARGS="$@"
-
-if [ ! -f "$SCRIPT" ]; then
-    echo "Error: Script '$SCRIPT' not found"
-    exit 1
-fi
-
-VERSIONS=("lua5.1" "lua5.2" "lua5.3" "lua5.4" "luajit")
-FAILED=0
-SUCCESS=0
-
-echo "========================================="
-echo "Testing $SCRIPT with all Lua versions"
-echo "========================================="
-echo ""
-
-for VERSION in "${VERSIONS[@]}"; do
-    echo "--- Testing with $VERSION ---"
-    if $VERSION "$SCRIPT" $ARGS; then
-        echo "✓ $VERSION: SUCCESS"
-        SUCCESS=$((SUCCESS + 1))
-    else
-        echo "✗ $VERSION: FAILED"
-        FAILED=$((FAILED + 1))
-    fi
     echo ""
-done
-
-echo "========================================="
-echo "Results: $SUCCESS passed, $FAILED failed"
-echo "========================================="
-
-if [ $FAILED -ne 0 ]; then
+    echo "Note: This command is equivalent to 'vl all lua <script.lua> [args...]'"
+    echo "Consider using 'vl' for more flexibility."
     exit 1
 fi
+
+# Call vl with all versions
+exec vl all lua "$@"

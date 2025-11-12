@@ -24,9 +24,10 @@ RUN ln -sf /usr/bin/luarocks-5.1 /usr/local/bin/luarocks-5.1 && \
     ln -sf /usr/bin/luarocks-5.3 /usr/local/bin/luarocks-5.3 && \
     ln -sf /usr/bin/luarocks-5.4 /usr/local/bin/luarocks-5.4
 
-# Copy and install test-all-lua helper script
+# Copy and install helper scripts
+COPY vl /usr/local/bin/vl
 COPY test-all-lua /usr/local/bin/test-all-lua
-RUN chmod +x /usr/local/bin/test-all-lua
+RUN chmod +x /usr/local/bin/vl /usr/local/bin/test-all-lua
 
 # Set working directory
 WORKDIR /workspace

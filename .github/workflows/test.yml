@@ -24,15 +24,14 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      - name: Test with test-all-lua helper
+      - name: Test Lua with all versions
+        run: |
+          docker run --rm -v $PWD/test:/workspace/test lua-devcontainer:test vl all lua test/run.lua
+
+      - name: Verify LuaRocks with all versions
+        run: |
+          docker run --rm lua-devcontainer:test vl all luarocks --version
+
+      - name: Test backwards compatibility with test-all-lua
         run: |
           docker run --rm -v $PWD/test:/workspace/test lua-devcontainer:test test-all-lua test/run.lua
-
-      - name: Verify LuaRocks installations
-        run: |
-          echo "Verifying LuaRocks for all Lua versions..."
-          docker run --rm lua-devcontainer:test luarocks-5.1 --version
-          docker run --rm lua-devcontainer:test luarocks-5.2 --version
-          docker run --rm lua-devcontainer:test luarocks-5.3 --version
-          docker run --rm lua-devcontainer:test luarocks-5.4 --version
-          echo "✓ All LuaRocks versions available"

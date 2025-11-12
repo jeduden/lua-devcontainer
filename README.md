@@ -9,8 +9,8 @@ All Lua versions in a single, fast development container. No version switching n
 
 - ✅ **All Lua Versions**: 5.1, 5.2, 5.3, 5.4, and LuaJIT
 - ✅ **All LuaRocks**: Separate package manager for each Lua version
+- ✅ **Unified Command**: `vl` command to run lua/luarocks with any version combination
 - ✅ **Direct Access**: Use `lua5.1`, `lua5.2`, `lua5.3`, `lua5.4`, or `luajit` directly
-- ✅ **Test Helper**: `test-all-lua` command runs scripts with all versions
 - ✅ **Development Tools**: gcc, make, git, cmake, and more pre-installed
 - ✅ **Small & Fast**: Alpine-based for minimal size (~200MB)
 - ✅ **Multi-Architecture**: Supports amd64 and arm64
@@ -23,11 +23,17 @@ All Lua versions in a single, fast development container. No version switching n
 # Pull and run
 docker run -it -v $PWD:/workspace ghcr.io/jeduden/lua-devcontainer:latest
 
-# Run script with specific version
-docker run -v $PWD:/workspace ghcr.io/jeduden/lua-devcontainer lua5.4 script.lua
+# Test script with all Lua versions
+docker run -v $PWD:/workspace ghcr.io/jeduden/lua-devcontainer vl all lua script.lua
 
-# Test with all versions
-docker run -v $PWD:/workspace ghcr.io/jeduden/lua-devcontainer test-all-lua script.lua
+# Test with specific versions only
+docker run -v $PWD:/workspace ghcr.io/jeduden/lua-devcontainer vl 5.3,5.4 lua script.lua
+
+# Install LuaRocks package for all versions
+docker run -v $PWD:/workspace ghcr.io/jeduden/lua-devcontainer vl all luarocks install luacheck
+
+# Or use specific version directly
+docker run -v $PWD:/workspace ghcr.io/jeduden/lua-devcontainer lua5.4 script.lua
 ```
 
 ### Use as DevContainer
@@ -47,10 +53,14 @@ jobs:
     container: ghcr.io/jeduden/lua-devcontainer:latest
     steps:
       - uses: actions/checkout@v4
-      - run: test-all-lua test/run.lua
+      - name: Test with all Lua versions
+        run: vl all lua test/run.lua
+
+      - name: Verify LuaRocks
+        run: vl all luarocks --version
 ```
 
-### Test with Matrix Strategy
+### Test Specific Versions with Matrix
 ```yaml
 jobs:
   test:
@@ -58,13 +68,24 @@ jobs:
     container: ghcr.io/jeduden/lua-devcontainer:latest
     strategy:
       matrix:
-        lua: [lua5.1, lua5.2, lua5.3, lua5.4, luajit]
+        lua: ['5.1', '5.2', '5.3', '5.4', 'jit']
     steps:
       - uses: actions/checkout@v4
-      - run: ${{ matrix.lua }} test/run.lua
+      - run: vl ${{ matrix.lua }} lua test/run.lua
 ```
 
 ## Available Commands
+
+### Main Commands
+
+| Command | Description |
+|---------|-------------|
+| `vl <versions> lua [args...]` | Run lua with specified versions (e.g., `vl all lua script.lua`) |
+| `vl <versions> luarocks [args...]` | Run luarocks with specified versions (e.g., `vl 5.3,5.4 luarocks install pkg`) |
+
+**Version syntax**: `all`, `5.1`, `5.2`, `5.3`, `5.4`, `jit`, or comma-separated (e.g., `5.1,5.4,jit`)
+
+### Direct Access Commands
 
 | Command | Description |
 |---------|-------------|
@@ -77,32 +98,58 @@ jobs:
 | `luarocks-5.2` | LuaRocks for Lua 5.2 |
 | `luarocks-5.3` | LuaRocks for Lua 5.3 |
 | `luarocks-5.4` | LuaRocks for Lua 5.4 |
-| `test-all-lua` | Run script with all Lua versions |
+
+### Legacy Commands
+
+| Command | Description |
+|---------|-------------|
+| `test-all-lua` | Wrapper for `vl all lua` (backwards compatible) |
 
 ## Examples
 
 ### Test Script with All Versions
 ```bash
-# Using the helper
+# Using vl (recommended)
+vl all lua my_script.lua
+
+# Using test-all-lua (backwards compatible)
 test-all-lua my_script.lua
 
-# Or manually
+# Or manually with direct commands
 for v in lua5.1 lua5.2 lua5.3 lua5.4 luajit; do
     echo "Testing with $v"
     $v my_script.lua
 done
 ```
 
-### Install Package for Specific Version
+### Test with Specific Versions
 ```bash
-luarocks-5.4 install luacheck
-luarocks-5.1 install luasocket
+# Test with only Lua 5.3 and 5.4
+vl 5.3,5.4 lua my_script.lua
+
+# Test with Lua 5.4 and LuaJIT only
+vl 5.4,jit lua my_script.lua
 ```
 
-### Check Version
+### Install LuaRocks Packages
 ```bash
+# Install for all Lua versions
+vl all luarocks install luacheck
+
+# Install for specific versions only
+vl 5.3,5.4 luarocks install luasocket
+
+# Or install for a single version directly
+luarocks-5.4 install luacheck
+```
+
+### Check Versions
+```bash
+# Check all Lua versions
+vl all lua -e 'print(_VERSION)'
+
+# Check specific version
 lua5.1 -e 'print(_VERSION)'  # Lua 5.1
-lua5.4 -e 'print(_VERSION)'  # Lua 5.4
 luajit -e 'print(jit.version)'  # LuaJIT 2.1.0-beta3
 ```
 
@@ -115,7 +162,7 @@ Add to your Latch project:
 {
   "name": "Latch Development",
   "image": "ghcr.io/jeduden/lua-devcontainer:latest",
-  "postCreateCommand": "test-all-lua test/run.lua"
+  "postCreateCommand": "vl all lua test/run.lua"
 }
 ```
 
@@ -129,7 +176,10 @@ jobs:
     container: ghcr.io/jeduden/lua-devcontainer:latest
     steps:
       - uses: actions/checkout@v4
-      - run: test-all-lua test/run.lua
+      - name: Test all Lua versions
+        run: vl all lua test/run.lua
+      - name: Verify LuaRocks
+        run: vl all luarocks --version
 ```
 
 ## Container Architecture
