@@ -5,8 +5,8 @@ on:
   pull_request:
 
 jobs:
-  test-build:
-    name: Test Docker Build
+  test-all:
+    name: Test All Lua Versions
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -24,62 +24,15 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      - name: Test Lua versions
-        run: |
-          echo "Testing Lua 5.1..."
-          docker run --rm lua-devcontainer:test lua5.1 -e 'print(_VERSION)'
-
-          echo "Testing Lua 5.2..."
-          docker run --rm lua-devcontainer:test lua5.2 -e 'print(_VERSION)'
-
-          echo "Testing Lua 5.3..."
-          docker run --rm lua-devcontainer:test lua5.3 -e 'print(_VERSION)'
-
-          echo "Testing Lua 5.4..."
-          docker run --rm lua-devcontainer:test lua5.4 -e 'print(_VERSION)'
-
-          echo "Testing LuaJIT..."
-          docker run --rm lua-devcontainer:test luajit -e 'print(jit.version)'
-
-      - name: Test LuaRocks versions
-        run: |
-          echo "Testing LuaRocks for Lua 5.1..."
-          docker run --rm lua-devcontainer:test luarocks-5.1 --version
-
-          echo "Testing LuaRocks for Lua 5.2..."
-          docker run --rm lua-devcontainer:test luarocks-5.2 --version
-
-          echo "Testing LuaRocks for Lua 5.3..."
-          docker run --rm lua-devcontainer:test luarocks-5.3 --version
-
-          echo "Testing LuaRocks for Lua 5.4..."
-          docker run --rm lua-devcontainer:test luarocks-5.4 --version
-
-      - name: Test example script
+      - name: Test with test-all-lua helper
         run: |
           docker run --rm -v $PWD/test:/workspace/test lua-devcontainer:test test-all-lua test/run.lua
 
-  test-matrix:
-    name: Test with ${{ matrix.lua }}
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        lua: [lua5.1, lua5.2, lua5.3, lua5.4, luajit]
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Build Docker image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          load: true
-          tags: lua-devcontainer:test
-          cache-from: type=gha
-
-      - name: Run test with ${{ matrix.lua }}
+      - name: Verify LuaRocks installations
         run: |
-          docker run --rm -v $PWD/test:/workspace/test lua-devcontainer:test ${{ matrix.lua }} test/run.lua
+          echo "Verifying LuaRocks for all Lua versions..."
+          docker run --rm lua-devcontainer:test luarocks-5.1 --version
+          docker run --rm lua-devcontainer:test luarocks-5.2 --version
+          docker run --rm lua-devcontainer:test luarocks-5.3 --version
+          docker run --rm lua-devcontainer:test luarocks-5.4 --version
+          echo "✓ All LuaRocks versions available"
