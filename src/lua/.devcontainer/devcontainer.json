@@ -6,7 +6,19 @@
       "extensions": [
         "sumneko.lua",
         "actboy168.lua-debug"
-      ]
+      ],
+      "settings": {
+        "Lua.runtime.version": "Lua ${templateOption:defaultLuaVersion}",
+        "Lua.runtime.path": [
+          "?.lua",
+          "?/init.lua"
+        ],
+        "Lua.workspace.library": [
+          "/usr/share/lua/${templateOption:defaultLuaVersion}",
+          "/usr/lib/lua/${templateOption:defaultLuaVersion}"
+        ],
+        "Lua.telemetry.enable": false
+      }
     }
   },
   "postCreateCommand": "lua5.4 -e 'print(\"Lua devcontainer ready!\")'",
