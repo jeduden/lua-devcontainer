@@ -99,21 +99,12 @@ jobs:
 | `luarocks-5.3` | LuaRocks for Lua 5.3 |
 | `luarocks-5.4` | LuaRocks for Lua 5.4 |
 
-### Legacy Commands
-
-| Command | Description |
-|---------|-------------|
-| `test-all-lua` | Wrapper for `vl all lua` (backwards compatible) |
-
 ## Examples
 
 ### Test Script with All Versions
 ```bash
-# Using vl (recommended)
+# Using vl
 vl all lua my_script.lua
-
-# Using test-all-lua (backwards compatible)
-test-all-lua my_script.lua
 
 # Or manually with direct commands
 for v in lua5.1 lua5.2 lua5.3 lua5.4 luajit; do
