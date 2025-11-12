@@ -4,17 +4,23 @@ on:
   pull_request:
   workflow_dispatch:
 
+permissions: {}
+
 jobs:
   test:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
+        with:
+          persist-credentials: false
 
-      - name: Build template container
+      - name: Pull published image
         run: |
-          cd src/lua/.devcontainer
-          docker build -t lua-devcontainer:test .
+          docker pull ghcr.io/jeduden/lua-devcontainer:latest
 
       - name: Run template tests
         run: |
-          docker run --rm lua-devcontainer:test bash -c "$(cat test/lua/test.sh)"
+          docker run --rm ghcr.io/jeduden/lua-devcontainer:latest bash -c "$(cat test/lua/test.sh)"

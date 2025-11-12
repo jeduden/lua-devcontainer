@@ -5,6 +5,8 @@ on:
     branches: [main]
   workflow_dispatch:
 
+permissions: {}
+
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -12,10 +14,13 @@ jobs:
       contents: read
       packages: write
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
+        with:
+          persist-credentials: false
 
       - name: Publish Templates
-        uses: devcontainers/action@v1
+        uses: devcontainers/action@6573f4546a4b33b712265b0f4143d6ec0cd4fc00 # v1
         with:
           publish-templates: "true"
           base-path-to-templates: "./src"

@@ -1,9 +1,6 @@
 {
   "name": "Lua Multi-Version Development",
-  "build": {
-    "dockerfile": "Dockerfile",
-    "context": "."
-  },
+  "image": "ghcr.io/jeduden/lua-devcontainer:latest",
   "customizations": {
     "vscode": {
       "extensions": [
