@@ -63,3 +63,22 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      - name: Build local image for size inspection
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          platforms: linux/amd64
+          load: true
+          tags: lua-devcontainer:size-check
+          cache-from: type=gha
+
+      - name: Report container size
+        run: |
+          echo "========================================="
+          echo "Container Size Report"
+          echo "========================================="
+          docker images lua-devcontainer:size-check --format "Size: {{.Size}}"
+          SIZE=$(docker images lua-devcontainer:size-check --format "{{.Size}}")
+          echo "Final size: $SIZE"
+          echo "========================================="

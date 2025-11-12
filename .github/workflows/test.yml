@@ -32,21 +32,84 @@ jobs:
         run: |
           docker run --rm lua-devcontainer:test vl all luarocks --version
 
-      - name: Test package isolation between versions
+  test-isolation-5_4:
+    name: Test isolation - pkg installed for 5.4
+    runs-on: ubuntu-latest
+    needs: test-all
+    strategy:
+      matrix:
+        version: ['5.1', '5.2', '5.3', '5.4', 'jit']
+        include:
+          - version: '5.4'
+            should_exist: 'true'
+          - version: '5.1'
+            should_exist: 'false'
+          - version: '5.2'
+            should_exist: 'false'
+          - version: '5.3'
+            should_exist: 'false'
+          - version: 'jit'
+            should_exist: 'false'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          load: true
+          tags: lua-devcontainer:test
+          cache-from: type=gha
+
+      - name: Install and test ${{ matrix.version }} - should_exist=${{ matrix.should_exist }}
         run: |
-          docker run --rm lua-devcontainer:test bash -c '
+          docker run --rm -v $PWD/test:/workspace/test lua-devcontainer:test bash -c "
             set -e
-            # Install a package for Lua 5.4 only
             luarocks-5.4 install luafilesystem
+            vl ${{ matrix.version }} lua test/test_package_isolation.lua ${{ matrix.version }} ${{ matrix.should_exist }}
+          "
 
-            # Verify it works with Lua 5.4
-            lua5.4 -e "require(\"lfs\"); print(\"✓ lfs available in Lua 5.4\")"
+  test-isolation-5_1:
+    name: Test isolation - pkg installed for 5.1
+    runs-on: ubuntu-latest
+    needs: test-all
+    strategy:
+      matrix:
+        version: ['5.1', '5.2', '5.3', '5.4', 'jit']
+        include:
+          - version: '5.1'
+            should_exist: 'true'
+          - version: 'jit'
+            should_exist: 'true'
+          - version: '5.2'
+            should_exist: 'false'
+          - version: '5.3'
+            should_exist: 'false'
+          - version: '5.4'
+            should_exist: 'false'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-            # Verify it'\''s NOT available in Lua 5.3 (demonstrates isolation)
-            lua5.3 -e "local ok = pcall(require, \"lfs\"); if not ok then print(\"✓ lfs NOT in Lua 5.3 (isolated)\") else error(\"Package should not be available\") end"
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-            # Install for Lua 5.1 and verify it'\''s shared with LuaJIT
+      - name: Build Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          load: true
+          tags: lua-devcontainer:test
+          cache-from: type=gha
+
+      - name: Install and test ${{ matrix.version }} - should_exist=${{ matrix.should_exist }}
+        run: |
+          docker run --rm -v $PWD/test:/workspace/test lua-devcontainer:test bash -c "
+            set -e
             luarocks-5.1 install luafilesystem
-            lua5.1 -e "require(\"lfs\"); print(\"✓ lfs available in Lua 5.1\")"
-            luajit -e "require(\"lfs\"); print(\"✓ lfs available in LuaJIT (shared with 5.1)\")"
-          '
+            vl ${{ matrix.version }} lua test/test_package_isolation.lua ${{ matrix.version }} ${{ matrix.should_exist }}
+          "
