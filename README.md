@@ -216,10 +216,6 @@ jobs:
 
 The container is optimized for size without sacrificing functionality. All Lua versions and build tools are included while keeping the footprint minimal.
 
-## Documentation
-
-- [GitHub Actions Integration](docs/GITHUB_ACTIONS.md) - Learn how to integrate zizmor security analysis for GitHub Actions workflows
-
 ## License
 
 MIT License - See LICENSE file for details
