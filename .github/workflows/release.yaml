@@ -34,13 +34,13 @@ jobs:
           set -euo pipefail
           jq --arg version "$VERSION" \
             '.version = $version' \
-            src/lua/devcontainer-template.json > /tmp/template.json
-          mv /tmp/template.json src/lua/devcontainer-template.json
+            src/lua-multiversion/devcontainer-template.json > /tmp/template.json
+          mv /tmp/template.json src/lua-multiversion/devcontainer-template.json
 
           jq --arg image "ghcr.io/jeduden/lua-devcontainer:$TAG" \
             '.image = $image' \
-            src/lua/.devcontainer/devcontainer.json > /tmp/devcontainer.json
-          mv /tmp/devcontainer.json src/lua/.devcontainer/devcontainer.json
+            src/lua-multiversion/.devcontainer/devcontainer.json > /tmp/devcontainer.json
+          mv /tmp/devcontainer.json src/lua-multiversion/.devcontainer/devcontainer.json
 
       - name: Publish Templates
         uses: devcontainers/action@1082abd5d2bf3a11abccba70eef98df068277772 # v1.4.3
