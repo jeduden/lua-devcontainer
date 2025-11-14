@@ -268,9 +268,9 @@ lua5.1 -e 'print(_VERSION)'  # Lua 5.1
 luajit -e 'print(jit.version)'  # LuaJIT 2.1.0-beta3
 ```
 
-## For Latch Users
+## Devcontainer Users
 
-Add to your Latch project:
+Add as devcontainer to your project:
 
 `.devcontainer/devcontainer.json`:
 ```json
@@ -279,22 +279,6 @@ Add to your Latch project:
   "image": "ghcr.io/jeduden/lua-devcontainer:latest",
   "postCreateCommand": "vl all lua test/run.lua"
 }
-```
-
-`.github/workflows/test.yml`:
-```yaml
-name: Test Latch
-on: [push, pull_request]
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    container: ghcr.io/jeduden/lua-devcontainer:latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Test all Lua versions
-        run: vl all lua test/run.lua
-      - name: Verify LuaRocks
-        run: vl all luarocks --version
 ```
 
 ## Container Architecture
