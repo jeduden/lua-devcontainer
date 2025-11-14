@@ -37,7 +37,7 @@ jobs:
             src/lua-multiversion/devcontainer-template.json > /tmp/template.json
           mv /tmp/template.json src/lua-multiversion/devcontainer-template.json
 
-          jq --arg image "ghcr.io/jeduden/lua-devcontainer:$TAG" \
+          jq --arg image "ghcr.io/jeduden/lua-devcontainer:$VERSION" \
             '.image = $image' \
             src/lua-multiversion/.devcontainer/devcontainer.json > /tmp/devcontainer.json
           mv /tmp/devcontainer.json src/lua-multiversion/.devcontainer/devcontainer.json
