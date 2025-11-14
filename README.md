@@ -138,11 +138,11 @@ You can also apply the template using the `devcontainer` CLI:
 npm install -g @devcontainers/cli
 
 # Apply the template to your project
-devcontainer templates apply -t ghcr.io/jeduden/lua-devcontainer
+devcontainer templates apply -t lua-devcontainer/lua-multiversion
 
 # Or specify options directly
 devcontainer templates apply \
-  -t ghcr.io/jeduden/lua-devcontainer \
+  -t lua-devcontainer/lua-multiversion \
   -a luaVersion=5.4
 ```
 
