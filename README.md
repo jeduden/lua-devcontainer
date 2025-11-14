@@ -275,7 +275,7 @@ Add as devcontainer to your project:
 `.devcontainer/devcontainer.json`:
 ```json
 {
-  "name": "Latch Development",
+  "name": "Lua Development",
   "image": "ghcr.io/jeduden/lua-devcontainer:latest",
   "postCreateCommand": "vl all lua test/run.lua"
 }
