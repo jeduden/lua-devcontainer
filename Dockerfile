@@ -1,4 +1,4 @@
-FROM alpine:3.19
+FROM mcr.microsoft.com/devcontainers/base:alpine
 
 # Install all Lua versions, LuaRocks, and development tools in a single layer
 RUN apk add --no-cache \
