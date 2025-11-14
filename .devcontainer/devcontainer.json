@@ -1,5 +1,6 @@
 {
   "name": "Lua Multi-Version Development",
+  "image": "ghcr.io/jeduden/lua-devcontainer:latest",
   "build": {
     "dockerfile": "../Dockerfile",
     "context": ".."
