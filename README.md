@@ -118,7 +118,7 @@ Create `.devcontainer/devcontainer.json` in your project:
 
 **Note**: This template will be available once published to the Dev Container registry.
 
-When creating a new project with this template:
+**Using VS Code UI:**
 
 1. In VS Code, open the Command Palette (Ctrl+Shift+P / Cmd+Shift+P)
 2. Run "Dev Containers: Add Dev Container Configuration Files..."
@@ -128,6 +128,26 @@ When creating a new project with this template:
    - Choose `5.3` for Lua 5.3
    - Choose `5.2` for Lua 5.2
    - Choose `5.1` for Lua 5.1 or LuaJIT compatibility
+
+**Using DevContainer CLI:**
+
+You can also apply the template using the `devcontainer` CLI:
+
+```bash
+# Install the devcontainer CLI if you don't have it
+npm install -g @devcontainers/cli
+
+# Apply the template to your project
+devcontainer templates apply -t ghcr.io/jeduden/lua-devcontainer
+
+# Or specify options directly
+devcontainer templates apply \
+  -t ghcr.io/jeduden/lua-devcontainer \
+  -a luaVersion=5.4
+```
+
+Available template options:
+- `luaVersion`: Choose default Lua version for LSP (`5.1`, `5.2`, `5.3`, or `5.4`)
 
 This selection automatically configures:
 - **Language Server**: Sets `Lua.runtime.version` to match your choice
