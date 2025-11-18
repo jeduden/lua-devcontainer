@@ -42,5 +42,8 @@ RUN chmod +x /usr/local/bin/vl
 # Set working directory
 WORKDIR /workspace
 
+# Switch to vscode user
+USER vscode
+
 # Default command
 CMD ["/bin/bash"]

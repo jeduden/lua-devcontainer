@@ -25,5 +25,5 @@
     }
   },
   "postCreateCommand": "lua5.4 -e 'print(\"Lua devcontainer ready!\")'",
-  "remoteUser": "root"
+  "remoteUser": "vscode"
 }
