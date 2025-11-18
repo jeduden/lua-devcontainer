@@ -71,6 +71,10 @@ This achieves 80% of the value with 5% of the overhead.
 - You want to onboard multiple new contributors
 - You need to document complex decision-making processes
 
+## See Also
+
+- **[SPEC-KIT-SUGGESTION.md](./SPEC-KIT-SUGGESTION.md)** - Assessment of GitHub's spec-kit methodology (also not recommended for this project)
+
 ---
 
 **TL;DR**: BMAD-METHOD is a development workflow tool (not container content). For a focused container project like this, it's optional and likely unnecessary unless you have complex planning needs.
