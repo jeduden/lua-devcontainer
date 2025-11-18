@@ -65,7 +65,8 @@ RUN mkdir -p /usr/local/lib/luarocks/rocks-5.1 \
              /usr/share/lua/5.2 \
              /usr/share/lua/5.3 \
              /usr/share/lua/5.4 && \
-    chown -R vscode:vscode /usr/local/lib/luarocks \
+    chown -R vscode:vscode /usr/local/bin \
+                           /usr/local/lib/luarocks \
                            /usr/local/share/lua \
                            /usr/local/lib/lua \
                            /usr/lib/luarocks \
