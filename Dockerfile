@@ -56,12 +56,21 @@ RUN mkdir -p /usr/local/lib/luarocks/rocks-5.1 \
              /usr/lib/luarocks/rocks-5.1 \
              /usr/lib/luarocks/rocks-5.2 \
              /usr/lib/luarocks/rocks-5.3 \
-             /usr/lib/luarocks/rocks-5.4 && \
+             /usr/lib/luarocks/rocks-5.4 \
+             /usr/lib/lua/5.1 \
+             /usr/lib/lua/5.2 \
+             /usr/lib/lua/5.3 \
+             /usr/lib/lua/5.4 \
+             /usr/share/lua/5.1 \
+             /usr/share/lua/5.2 \
+             /usr/share/lua/5.3 \
+             /usr/share/lua/5.4 && \
     chown -R vscode:vscode /usr/local/lib/luarocks \
                            /usr/local/share/lua \
                            /usr/local/lib/lua \
-                           /usr/lib/luarocks && \
-    chown -R vscode:vscode /usr/lib/lua /usr/share/lua 2>/dev/null || true
+                           /usr/lib/luarocks \
+                           /usr/lib/lua \
+                           /usr/share/lua
 
 # Set working directory and ensure vscode user owns it
 WORKDIR /workspace
