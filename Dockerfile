@@ -39,8 +39,46 @@ RUN ARCH=$(uname -m) && \
 COPY vl /usr/local/bin/vl
 RUN chmod +x /usr/local/bin/vl
 
-# Set working directory
+# Create LuaRocks directories and grant vscode user permissions
+# Alpine's luarocks uses both /usr and /usr/local directories
+RUN mkdir -p /usr/local/lib/luarocks/rocks-5.1 \
+             /usr/local/lib/luarocks/rocks-5.2 \
+             /usr/local/lib/luarocks/rocks-5.3 \
+             /usr/local/lib/luarocks/rocks-5.4 \
+             /usr/local/share/lua/5.1 \
+             /usr/local/share/lua/5.2 \
+             /usr/local/share/lua/5.3 \
+             /usr/local/share/lua/5.4 \
+             /usr/local/lib/lua/5.1 \
+             /usr/local/lib/lua/5.2 \
+             /usr/local/lib/lua/5.3 \
+             /usr/local/lib/lua/5.4 \
+             /usr/lib/luarocks/rocks-5.1 \
+             /usr/lib/luarocks/rocks-5.2 \
+             /usr/lib/luarocks/rocks-5.3 \
+             /usr/lib/luarocks/rocks-5.4 \
+             /usr/lib/lua/5.1 \
+             /usr/lib/lua/5.2 \
+             /usr/lib/lua/5.3 \
+             /usr/lib/lua/5.4 \
+             /usr/share/lua/5.1 \
+             /usr/share/lua/5.2 \
+             /usr/share/lua/5.3 \
+             /usr/share/lua/5.4 && \
+    chown -R vscode:vscode /usr/local \
+                           /usr/lib/luarocks \
+                           /usr/lib/lua \
+                           /usr/share/lua
+
+# Set working directory and ensure vscode user owns it
 WORKDIR /workspace
+RUN chown vscode:vscode /workspace
+
+# Ensure vscode home directory exists and has correct permissions
+RUN mkdir -p /home/vscode && chown -R vscode:vscode /home/vscode
+
+# Switch to vscode user
+USER vscode
 
 # Default command
 CMD ["/bin/bash"]
