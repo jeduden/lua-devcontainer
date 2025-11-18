@@ -39,8 +39,9 @@ RUN ARCH=$(uname -m) && \
 COPY vl /usr/local/bin/vl
 RUN chmod +x /usr/local/bin/vl
 
-# Set working directory
+# Set working directory and ensure vscode user owns it
 WORKDIR /workspace
+RUN chown vscode:vscode /workspace
 
 # Switch to vscode user
 USER vscode
