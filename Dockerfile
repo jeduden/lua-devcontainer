@@ -76,6 +76,9 @@ RUN mkdir -p /usr/local/lib/luarocks/rocks-5.1 \
 WORKDIR /workspace
 RUN chown vscode:vscode /workspace
 
+# Ensure vscode home directory exists and has correct permissions
+RUN mkdir -p /home/vscode && chown -R vscode:vscode /home/vscode
+
 # Switch to vscode user
 USER vscode
 
