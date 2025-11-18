@@ -40,6 +40,7 @@ COPY vl /usr/local/bin/vl
 RUN chmod +x /usr/local/bin/vl
 
 # Create LuaRocks directories and grant vscode user permissions
+# Alpine's luarocks uses both /usr and /usr/local directories
 RUN mkdir -p /usr/local/lib/luarocks/rocks-5.1 \
              /usr/local/lib/luarocks/rocks-5.2 \
              /usr/local/lib/luarocks/rocks-5.3 \
@@ -54,7 +55,9 @@ RUN mkdir -p /usr/local/lib/luarocks/rocks-5.1 \
              /usr/local/lib/lua/5.4 && \
     chown -R vscode:vscode /usr/local/lib/luarocks \
                            /usr/local/share/lua \
-                           /usr/local/lib/lua
+                           /usr/local/lib/lua \
+                           /usr/lib/lua \
+                           /usr/share/lua
 
 # Set working directory and ensure vscode user owns it
 WORKDIR /workspace
