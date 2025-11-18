@@ -21,9 +21,9 @@ for INSTALL_VERSION in 5.1 5.2 5.3 5.4 jit; do
 
     # Determine which luarocks to use
     if [ "$INSTALL_VERSION" = "jit" ]; then
-        luarocks-5.1 install $PACKAGE > /dev/null 2>&1
+        luarocks-5.1 install $PACKAGE
     else
-        luarocks-${INSTALL_VERSION} install $PACKAGE > /dev/null 2>&1
+        luarocks-${INSTALL_VERSION} install $PACKAGE
     fi
 
     echo "Testing which versions can see the package:"
@@ -54,9 +54,9 @@ for INSTALL_VERSION in 5.1 5.2 5.3 5.4 jit; do
     # Clean up: remove the package for next iteration
     echo "Removing $PACKAGE from version $INSTALL_VERSION..."
     if [ "$INSTALL_VERSION" = "jit" ]; then
-        luarocks-5.1 remove $PACKAGE > /dev/null 2>&1
+        luarocks-5.1 remove $PACKAGE
     else
-        luarocks-${INSTALL_VERSION} remove $PACKAGE > /dev/null 2>&1
+        luarocks-${INSTALL_VERSION} remove $PACKAGE
     fi
 
     echo ""
