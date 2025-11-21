@@ -80,5 +80,11 @@ RUN mkdir -p /home/vscode && chown -R vscode:vscode /home/vscode
 # Switch to vscode user
 USER vscode
 
+# Install luacov for all Lua versions
+RUN luarocks-5.1 install luacov && \
+    luarocks-5.2 install luacov && \
+    luarocks-5.3 install luacov && \
+    luarocks-5.4 install luacov
+
 # Default command
 CMD ["/bin/bash"]
