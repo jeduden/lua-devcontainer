@@ -2,8 +2,6 @@
 # Test that all command line tools start successfully
 # This ensures all Lua versions, LuaRocks, and installed packages work
 
-set -e
-
 echo "========================================"
 echo "Command Line Tools Startup Test"
 echo "========================================"
@@ -25,8 +23,9 @@ test_command() {
     else
         echo "✗ FAILED"
         echo "  Command: $@"
+        # Also show stderr for debugging
+        "$@" 2>&1 | head -5 | sed 's/^/    /'
         ((FAILED++))
-        return 1
     fi
 }
 
