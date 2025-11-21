@@ -17,21 +17,25 @@ This document provides guidelines for Claude (AI assistant) when working on this
 
 ### Existing Test Suite
 
-The project has the following tests in the `test/` directory:
+The project has the following tests in the `test/` directory, organized by test type:
 
-#### 1. `test/test_cli_tools.sh`
-**Purpose**: Verifies all command-line tools start successfully
+#### Smoke Tests (Fast - Fail Fast)
+
+##### 1. `test/test_cli_tools.sh`
+**Purpose**: Verifies all command-line tools start successfully (smoke test only)
 
 Tests:
-- All Lua interpreters (5.1, 5.2, 5.3, 5.4, LuaJIT)
-- All LuaRocks package managers (luarocks-5.1 through luarocks-5.4)
-- The `vl` helper command with various version combinations
-- All installed packages (e.g., luacov) are loadable from all Lua versions
+- All Lua interpreters (5.1, 5.2, 5.3, 5.4, LuaJIT) start
+- All LuaRocks package managers (luarocks-5.1 through luarocks-5.4) start
 
-**When to update**: Add new command-line tools or packages to this test
+**When to update**: When adding new Lua versions or command-line tools
 
-#### 2. `test/run.lua`
-**Purpose**: Basic Lua functionality test
+**Note**: This is a smoke test only - it verifies tools exist and start, but doesn't test functionality
+
+#### Functional Tests (Medium)
+
+##### 2. `test/run.lua`
+**Purpose**: Tests basic Lua functionality across all versions
 
 Tests:
 - Lua version detection
@@ -40,12 +44,26 @@ Tests:
 
 **When to update**: When adding Lua-specific features or libraries
 
-#### 3. `test/test_package_isolation_matrix.sh`
+**Run via**: `vl all lua test/run.lua` (tests all versions automatically)
+
+##### 3. `test/test_luacov.sh`
+**Purpose**: Verifies luacov code coverage tool is installed for all Lua versions
+
+Tests:
+- `luacov` module can be required from all Lua versions
+- `luacov.runner` module is available for all versions
+
+**When to update**: When adding new Lua versions or coverage-related packages
+
+#### Integration Tests (Comprehensive)
+
+##### 4. `test/test_package_isolation_matrix.sh`
 **Purpose**: Verifies package isolation between Lua versions
 
 Tests:
 - Packages installed for one version aren't visible to others (except 5.1/LuaJIT)
 - Lua 5.1 and LuaJIT share packages correctly
+- Full matrix testing across all version combinations
 
 **When to update**: When changing LuaRocks configuration or package installation logic
 
@@ -65,11 +83,13 @@ Tests cannot be run directly in this environment (no Docker available), but you 
 All tests run automatically in GitHub Actions:
 
 1. `.github/workflows/test.yml` - Runs on every pull request
-2. Tests run in order:
-   - CLI tools startup test (fails fast if tools don't work)
-   - Lua version test with `vl all`
-   - LuaRocks verification
-   - Package isolation matrix
+2. Tests run in order (organized by test type):
+   - **Smoke Test**: CLI tools startup (fails fast if tools don't exist)
+   - **Functional Test**: Lua features (`vl all lua test/run.lua`)
+   - **Functional Test**: Luacov coverage tools
+   - **Integration Test**: Package isolation matrix
+
+This ordering ensures fast feedback - smoke tests fail immediately if basic tools are broken.
 
 ### Test Structure Guidelines
 

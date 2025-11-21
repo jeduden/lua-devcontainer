@@ -1,6 +1,7 @@
 #!/bin/bash
-# Test that all command line tools start successfully
-# This ensures all Lua versions, LuaRocks, and installed packages work
+# Smoke Test: Verify all command line tools start successfully
+# This is a fast startup test - does not test functionality, just that tools exist and run
+# For functional tests, see test/run.lua and test/test_luacov.sh
 
 echo "========================================"
 echo "Command Line Tools Startup Test"
@@ -48,34 +49,6 @@ test_command "luarocks-5.1" luarocks-5.1 --version
 test_command "luarocks-5.2" luarocks-5.2 --version
 test_command "luarocks-5.3" luarocks-5.3 --version
 test_command "luarocks-5.4" luarocks-5.4 --version
-
-echo ""
-echo "----------------------------------------"
-echo "Testing vl Helper Command"
-echo "----------------------------------------"
-
-test_command "vl all lua" vl all lua -e 'print(_VERSION)'
-test_command "vl all luarocks" vl all luarocks --version
-test_command "vl with specific versions" vl 5.1,5.4,jit lua -e 'print(_VERSION)'
-
-echo ""
-echo "----------------------------------------"
-echo "Testing luacov Installation"
-echo "----------------------------------------"
-
-# Test that luacov module can be required by each Lua version
-test_command "luacov for lua5.1" lua5.1 -e 'require("luacov")'
-test_command "luacov for lua5.2" lua5.2 -e 'require("luacov")'
-test_command "luacov for lua5.3" lua5.3 -e 'require("luacov")'
-test_command "luacov for lua5.4" lua5.4 -e 'require("luacov")'
-test_command "luacov for luajit" luajit -e 'require("luacov")'
-
-# Test that luacov command line tool exists and runs
-test_command "luacov.runner for lua5.1" lua5.1 -e 'require("luacov.runner")'
-test_command "luacov.runner for lua5.2" lua5.2 -e 'require("luacov.runner")'
-test_command "luacov.runner for lua5.3" lua5.3 -e 'require("luacov.runner")'
-test_command "luacov.runner for lua5.4" lua5.4 -e 'require("luacov.runner")'
-test_command "luacov.runner for luajit" luajit -e 'require("luacov.runner")'
 
 echo ""
 echo "========================================"
