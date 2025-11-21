@@ -27,6 +27,10 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+      - name: Test all CLI tools startup
+        run: |
+          docker run --rm -v $PWD/test:/workspace/test lua-devcontainer:test bash test/test_cli_tools.sh
+
       - name: Test Lua with all versions
         run: |
           docker run --rm -v $PWD/test:/workspace/test lua-devcontainer:test vl all lua test/run.lua
