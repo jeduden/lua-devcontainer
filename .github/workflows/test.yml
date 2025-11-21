@@ -27,14 +27,18 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      - name: Test Lua with all versions
+      - name: Smoke Test - CLI tools startup
+        run: |
+          docker run --rm -v $PWD/test:/workspace/test lua-devcontainer:test bash test/test_cli_tools.sh
+
+      - name: Functional Test - Lua features
         run: |
           docker run --rm -v $PWD/test:/workspace/test lua-devcontainer:test vl all lua test/run.lua
 
-      - name: Verify LuaRocks with all versions
+      - name: Functional Test - Luacov coverage
         run: |
-          docker run --rm lua-devcontainer:test vl all luarocks --version
+          docker run --rm -v $PWD/test:/workspace/test lua-devcontainer:test bash test/test_luacov.sh
 
-      - name: Test package isolation matrix
+      - name: Integration Test - Package isolation
         run: |
           docker run --rm -v $PWD/test:/workspace/test lua-devcontainer:test bash test/test_package_isolation_matrix.sh
