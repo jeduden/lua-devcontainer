@@ -60,13 +60,6 @@ RUN luarocks-5.1 install luacov && \
     luarocks-5.3 install luacov && \
     luarocks-5.4 install luacov
 
-# Grant vscode user write access to luarocks directories for runtime package installation
-# Only chown the specific directories needed, not /usr/local (which would duplicate large files)
-RUN chown -R vscode:vscode /usr/local/lib/luarocks \
-                           /usr/local/share/lua \
-                           /usr/local/lib/lua \
-                           /usr/local/bin
-
 # Set working directory and ensure vscode user owns it
 WORKDIR /workspace
 RUN chown vscode:vscode /workspace
@@ -76,6 +69,17 @@ RUN mkdir -p /home/vscode && chown -R vscode:vscode /home/vscode
 
 # Switch to vscode user
 USER vscode
+
+# Configure luarocks to install packages locally by default (to ~/.luarocks)
+# This avoids needing write access to system directories
+RUN luarocks-5.1 config local_by_default true && \
+    luarocks-5.2 config local_by_default true && \
+    luarocks-5.3 config local_by_default true && \
+    luarocks-5.4 config local_by_default true
+
+# Add luarocks local paths to shell profile so user-installed packages are found
+RUN echo 'eval "$(luarocks-5.4 path)"' >> ~/.profile && \
+    echo 'eval "$(luarocks-5.4 path)"' >> ~/.bashrc
 
 # Default command
 CMD ["/bin/bash"]
