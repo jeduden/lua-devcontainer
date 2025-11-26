@@ -70,16 +70,23 @@ for VERSION in "${VERSIONS[@]}"; do
             # LuaJIT uses Lua 5.1 API, so use luarocks-5.1
             EXECUTABLE="luarocks-5.1"
         fi
+        ROCKS_VERSION="5.1"
     else
         if [ "$COMMAND" = "lua" ]; then
             EXECUTABLE="lua${VERSION}"
         else
             EXECUTABLE="luarocks-${VERSION}"
         fi
+        ROCKS_VERSION="$VERSION"
     fi
 
     if [ $TOTAL -gt 1 ]; then
         echo "--- $EXECUTABLE ---"
+    fi
+
+    # Set up luarocks paths for this Lua version when running lua commands
+    if [ "$COMMAND" = "lua" ]; then
+        eval "$(luarocks-${ROCKS_VERSION} path)"
     fi
 
     if $EXECUTABLE $ARGS; then
