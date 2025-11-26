@@ -27,6 +27,11 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+      - name: Report container size
+        run: |
+          SIZE=$(docker images lua-devcontainer:test --format "{{.Size}}")
+          echo "## Container Size: \`$SIZE\`" >> $GITHUB_STEP_SUMMARY
+
       - name: Smoke Test - CLI tools startup
         run: |
           docker run --rm -v $PWD/test:/workspace/test lua-devcontainer:test bash test/test_cli_tools.sh

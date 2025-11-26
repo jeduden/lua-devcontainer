@@ -39,7 +39,7 @@ RUN ARCH=$(uname -m) && \
 COPY vl /usr/local/bin/vl
 RUN chmod +x /usr/local/bin/vl
 
-# Create LuaRocks directories and grant vscode user permissions
+# Create LuaRocks directories for user-installed packages
 # Alpine's luarocks uses both /usr and /usr/local directories
 RUN mkdir -p /usr/local/lib/luarocks/rocks-5.1 \
              /usr/local/lib/luarocks/rocks-5.2 \
@@ -52,23 +52,13 @@ RUN mkdir -p /usr/local/lib/luarocks/rocks-5.1 \
              /usr/local/lib/lua/5.1 \
              /usr/local/lib/lua/5.2 \
              /usr/local/lib/lua/5.3 \
-             /usr/local/lib/lua/5.4 \
-             /usr/lib/luarocks/rocks-5.1 \
-             /usr/lib/luarocks/rocks-5.2 \
-             /usr/lib/luarocks/rocks-5.3 \
-             /usr/lib/luarocks/rocks-5.4 \
-             /usr/lib/lua/5.1 \
-             /usr/lib/lua/5.2 \
-             /usr/lib/lua/5.3 \
-             /usr/lib/lua/5.4 \
-             /usr/share/lua/5.1 \
-             /usr/share/lua/5.2 \
-             /usr/share/lua/5.3 \
-             /usr/share/lua/5.4 && \
-    chown -R vscode:vscode /usr/local \
-                           /usr/lib/luarocks \
-                           /usr/lib/lua \
-                           /usr/share/lua
+             /usr/local/lib/lua/5.4
+
+# Install luacov for all Lua versions (as root, before switching user)
+RUN luarocks-5.1 install luacov && \
+    luarocks-5.2 install luacov && \
+    luarocks-5.3 install luacov && \
+    luarocks-5.4 install luacov
 
 # Set working directory and ensure vscode user owns it
 WORKDIR /workspace
@@ -80,11 +70,16 @@ RUN mkdir -p /home/vscode && chown -R vscode:vscode /home/vscode
 # Switch to vscode user
 USER vscode
 
-# Install luacov for all Lua versions
-RUN luarocks-5.1 install luacov && \
-    luarocks-5.2 install luacov && \
-    luarocks-5.3 install luacov && \
-    luarocks-5.4 install luacov
+# Configure luarocks to install packages locally by default (to ~/.luarocks)
+# This avoids needing write access to system directories
+RUN luarocks-5.1 config local_by_default true && \
+    luarocks-5.2 config local_by_default true && \
+    luarocks-5.3 config local_by_default true && \
+    luarocks-5.4 config local_by_default true
+
+# Add luarocks local paths to shell profile so user-installed packages are found
+RUN echo 'eval "$(luarocks-5.4 path)"' >> ~/.profile && \
+    echo 'eval "$(luarocks-5.4 path)"' >> ~/.bashrc
 
 # Default command
 CMD ["/bin/bash"]
