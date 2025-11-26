@@ -64,7 +64,8 @@ RUN luarocks-5.1 install luacov && \
 # Only chown the specific directories needed, not /usr/local (which would duplicate large files)
 RUN chown -R vscode:vscode /usr/local/lib/luarocks \
                            /usr/local/share/lua \
-                           /usr/local/lib/lua
+                           /usr/local/lib/lua \
+                           /usr/local/bin
 
 # Set working directory and ensure vscode user owns it
 WORKDIR /workspace
