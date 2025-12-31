@@ -51,6 +51,13 @@ test_command "luarocks-5.3" luarocks-5.3 --version
 test_command "luarocks-5.4" luarocks-5.4 --version
 
 echo ""
+echo "----------------------------------------"
+echo "Testing Language Server"
+echo "----------------------------------------"
+
+test_command "lua-language-server" lua-language-server --version
+
+echo ""
 echo "========================================"
 echo "Test Summary"
 echo "========================================"
