@@ -12,9 +12,16 @@ echo "LuaRocks Package Isolation Test Matrix"
 echo "========================================"
 echo ""
 
+# Build version list dynamically based on what's available
+VERSIONS="5.1 5.2 5.3 5.4"
+if command -v lua5.5 >/dev/null 2>&1; then
+    VERSIONS="$VERSIONS 5.5"
+fi
+VERSIONS="$VERSIONS jit"
+
 # Test matrix:
 # Install for each version, then test all versions
-for INSTALL_VERSION in 5.1 5.2 5.3 5.4 5.5 jit; do
+for INSTALL_VERSION in $VERSIONS; do
     echo "----------------------------------------"
     echo "Installing $PACKAGE for version: $INSTALL_VERSION"
     echo "----------------------------------------"
@@ -30,7 +37,7 @@ for INSTALL_VERSION in 5.1 5.2 5.3 5.4 5.5 jit; do
     echo ""
 
     # Test all versions
-    for TEST_VERSION in 5.1 5.2 5.3 5.4 5.5 jit; do
+    for TEST_VERSION in $VERSIONS; do
         # Determine expected behavior
         if [ "$INSTALL_VERSION" = "5.1" ] || [ "$INSTALL_VERSION" = "jit" ]; then
             # 5.1 and jit share packages
