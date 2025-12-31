@@ -24,26 +24,10 @@ RUN ln -sf /usr/bin/luarocks-5.1 /usr/local/bin/luarocks-5.1 && \
     ln -sf /usr/bin/luarocks-5.3 /usr/local/bin/luarocks-5.3 && \
     ln -sf /usr/bin/luarocks-5.4 /usr/local/bin/luarocks-5.4
 
-# Build Lua Language Server from source for Alpine/musl compatibility
-# Pre-built binaries require glibc which is not available on Alpine
-# Pin to specific release tag for supply-chain security
-ARG LUA_LS_VERSION=3.13.6
-RUN apk add --no-cache --virtual .lls-build-deps samurai && \
-    ln -sf /usr/bin/samu /usr/bin/ninja && \
-    git clone --depth 1 --branch ${LUA_LS_VERSION} --recurse-submodules https://github.com/LuaLS/lua-language-server.git /tmp/lua-language-server && \
-    cd /tmp/lua-language-server && \
-    ./make.sh && \
-    mkdir -p /opt/lua-language-server/bin && \
-    cp -r /tmp/lua-language-server/bin/* /opt/lua-language-server/bin/ && \
-    cp -r /tmp/lua-language-server/main.lua /opt/lua-language-server/ && \
-    cp -r /tmp/lua-language-server/debugger.lua /opt/lua-language-server/ && \
-    cp -r /tmp/lua-language-server/locale /opt/lua-language-server/ && \
-    cp -r /tmp/lua-language-server/meta /opt/lua-language-server/ && \
-    cp -r /tmp/lua-language-server/script /opt/lua-language-server/ && \
-    ln -sf /opt/lua-language-server/bin/lua-language-server /usr/local/bin/lua-language-server && \
-    rm -rf /tmp/lua-language-server && \
-    rm -f /usr/bin/ninja && \
-    apk del .lls-build-deps
+# Install Lua Language Server from Alpine edge/community repository
+# This provides a musl-compatible binary built by Alpine maintainers
+RUN apk add --no-cache --repository=https://dl-cdn.alpinelinux.org/alpine/edge/community \
+    lua-language-server
 
 # Copy and install vl helper command
 COPY vl /usr/local/bin/vl
