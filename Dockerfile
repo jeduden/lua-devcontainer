@@ -26,8 +26,10 @@ RUN ln -sf /usr/bin/luarocks-5.1 /usr/local/bin/luarocks-5.1 && \
 
 # Build Lua Language Server from source for Alpine/musl compatibility
 # Pre-built binaries require glibc which is not available on Alpine
+# Pin to specific release tag for supply-chain security
+ARG LUA_LS_VERSION=3.13.6
 RUN apk add --no-cache --virtual .lls-build-deps ninja && \
-    git clone --depth 1 --recurse-submodules https://github.com/LuaLS/lua-language-server.git /tmp/lua-language-server && \
+    git clone --depth 1 --branch ${LUA_LS_VERSION} --recurse-submodules https://github.com/LuaLS/lua-language-server.git /tmp/lua-language-server && \
     cd /tmp/lua-language-server && \
     ./make.sh && \
     mkdir -p /opt/lua-language-server/bin && \
