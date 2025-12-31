@@ -7,10 +7,10 @@ All Lua versions in a single, fast development container. No version switching n
 
 ## Features
 
-- ✅ **All Lua Versions**: 5.1, 5.2, 5.3, 5.4, and LuaJIT
+- ✅ **All Lua Versions**: 5.1, 5.2, 5.3, 5.4, 5.5, and LuaJIT
 - ✅ **All LuaRocks**: Separate package manager for each Lua version
 - ✅ **Unified Command**: `vl` command to run lua/luarocks with any version combination
-- ✅ **Direct Access**: Use `lua5.1`, `lua5.2`, `lua5.3`, `lua5.4`, or `luajit` directly
+- ✅ **Direct Access**: Use `lua5.1`, `lua5.2`, `lua5.3`, `lua5.4`, `lua5.5`, or `luajit` directly
 - ✅ **Development Tools**: gcc, make, git, cmake, and more pre-installed
 - ✅ **Lua Language Server**: IntelliSense, hover docs, and diagnostics built-in
 - ✅ **Debugging Support**: Debug with any Lua version including LuaJIT
@@ -54,7 +54,7 @@ When prompted, click "Reopen in Container". This gives you a complete Lua develo
 
 - **Lua Language Server (LuaLS)**: Automatic IntelliSense, hover documentation, diagnostics, and code completion
 - **Lua Debugger**: Full debugging support with breakpoints, step-through, and variable inspection
-- **All Lua Versions**: Pre-configured to use Lua 5.4 by default, with all versions (5.1, 5.2, 5.3, 5.4, LuaJIT) available
+- **All Lua Versions**: Pre-configured to use Lua 5.4 by default, with all versions (5.1, 5.2, 5.3, 5.4, 5.5, LuaJIT) available
 
 **Debugging with Different Lua Versions:**
 
@@ -87,7 +87,7 @@ The container includes the `actboy168.lua-debug` extension. To debug with any Lu
 }
 ```
 
-Available runtimes: `lua5.1`, `lua5.2`, `lua5.3`, `lua5.4`, `luajit`
+Available runtimes: `lua5.1`, `lua5.2`, `lua5.3`, `lua5.4`, `lua5.5`, `luajit`
 
 **Changing LSP Lua Version:**
 
@@ -95,7 +95,7 @@ The Language Server is pre-configured for Lua 5.4. To change it, modify `.devcon
 
 ```json
 "settings": {
-  "Lua.runtime.version": "Lua 5.1",  // Change to 5.1, 5.2, 5.3, or 5.4
+  "Lua.runtime.version": "Lua 5.1",  // Change to 5.1, 5.2, 5.3, 5.4, or 5.5
   "Lua.workspace.library": [
     "/usr/share/lua/5.1",  // Update paths to match version
     "/usr/lib/lua/5.1"
@@ -124,7 +124,8 @@ When creating a new project with this template:
 2. Run "Dev Containers: Add Dev Container Configuration Files..."
 3. Search for "Lua Multi-Version Development"
 4. **You'll be prompted to select your default Lua version:**
-   - Choose `5.4` for the latest Lua (recommended)
+   - Choose `5.5` for the latest Lua
+   - Choose `5.4` for Lua 5.4 (recommended - most stable)
    - Choose `5.3` for Lua 5.3
    - Choose `5.2` for Lua 5.2
    - Choose `5.1` for Lua 5.1 or LuaJIT compatibility
@@ -134,7 +135,7 @@ This selection automatically configures:
 - **Library Paths**: Configures `Lua.workspace.library` for the correct version
 - **IntelliSense**: Provides accurate code completion for your Lua version
 
-All Lua versions (5.1, 5.2, 5.3, 5.4, LuaJIT) remain available in the container regardless of your LSP configuration choice.
+All Lua versions (5.1, 5.2, 5.3, 5.4, 5.5, LuaJIT) remain available in the container regardless of your LSP configuration choice.
 
 ### Use in GitHub Actions
 ```yaml
@@ -159,7 +160,7 @@ jobs:
     container: ghcr.io/jeduden/lua-devcontainer:latest
     strategy:
       matrix:
-        lua: ['5.1', '5.2', '5.3', '5.4', 'jit']
+        lua: ['5.1', '5.2', '5.3', '5.4', '5.5', 'jit']
     steps:
       - uses: actions/checkout@v4
       - run: vl ${{ matrix.lua }} lua test/run.lua
@@ -174,7 +175,7 @@ jobs:
 | `vl <versions> lua [args...]` | Run lua with specified versions (e.g., `vl all lua script.lua`) |
 | `vl <versions> luarocks [args...]` | Run luarocks with specified versions (e.g., `vl 5.3,5.4 luarocks install pkg`) |
 
-**Version syntax**: `all`, `5.1`, `5.2`, `5.3`, `5.4`, `jit`, or comma-separated (e.g., `5.1,5.4,jit`)
+**Version syntax**: `all`, `5.1`, `5.2`, `5.3`, `5.4`, `5.5`, `jit`, or comma-separated (e.g., `5.1,5.4,jit`)
 
 **Important Notes**:
 - LuaJIT uses the Lua 5.1 API, so `vl jit luarocks` will use `luarocks-5.1`
@@ -189,11 +190,13 @@ jobs:
 | `lua5.2` | Lua 5.2 interpreter |
 | `lua5.3` | Lua 5.3 interpreter |
 | `lua5.4` | Lua 5.4 interpreter |
+| `lua5.5` | Lua 5.5 interpreter |
 | `luajit` | LuaJIT 2.1 interpreter |
 | `luarocks-5.1` | LuaRocks for Lua 5.1 |
 | `luarocks-5.2` | LuaRocks for Lua 5.2 |
 | `luarocks-5.3` | LuaRocks for Lua 5.3 |
 | `luarocks-5.4` | LuaRocks for Lua 5.4 |
+| `luarocks-5.5` | LuaRocks for Lua 5.5 |
 
 ## Examples
 
@@ -203,7 +206,7 @@ jobs:
 vl all lua my_script.lua
 
 # Or manually with direct commands
-for v in lua5.1 lua5.2 lua5.3 lua5.4 luajit; do
+for v in lua5.1 lua5.2 lua5.3 lua5.4 lua5.5 luajit; do
     echo "Testing with $v"
     $v my_script.lua
 done
@@ -255,7 +258,7 @@ lua5.4 -e "require('socket')"    # ✗ Error: module not found
 
 # To make available everywhere, install for all versions
 vl all luarocks install luasocket
-# This installs separately for: 5.1, 5.2, 5.3, 5.4 (and 5.1 covers LuaJIT)
+# This installs separately for: 5.1, 5.2, 5.3, 5.4, 5.5 (and 5.1 covers LuaJIT)
 ```
 
 ### Check Versions

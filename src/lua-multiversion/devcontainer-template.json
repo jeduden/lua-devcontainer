@@ -2,17 +2,17 @@
   "id": "lua-multiversion",
   "version": "1.0.0",
   "name": "Lua Multi-Version Development",
-  "description": "Complete Lua development environment with all versions (5.1-5.4, LuaJIT), LuaRocks, Language Server, and debugging support",
+  "description": "Complete Lua development environment with all versions (5.1-5.5, LuaJIT), LuaRocks, Language Server, and debugging support",
   "documentationURL": "https://github.com/jeduden/lua-devcontainer",
   "licenseURL": "https://github.com/jeduden/lua-devcontainer/blob/main/LICENSE",
   "publisher": "jeduden",
-  "keywords": ["lua", "lua5.1", "lua5.2", "lua5.3", "lua5.4", "luajit", "luarocks", "multiversion"],
+  "keywords": ["lua", "lua5.1", "lua5.2", "lua5.3", "lua5.4", "lua5.5", "luajit", "luarocks", "multiversion"],
   "platforms": ["Any"],
   "options": {
     "defaultLuaVersion": {
       "type": "string",
       "description": "Default Lua version for Language Server configuration (use 5.1 for LuaJIT compatibility)",
-      "proposals": ["5.4", "5.3", "5.2", "5.1"],
+      "proposals": ["5.5", "5.4", "5.3", "5.2", "5.1"],
       "default": "5.4"
     }
   }

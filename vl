@@ -18,7 +18,7 @@ if [ $# -lt 2 ]; then
     echo "Usage: vl <versions> <lua|luarocks> [args...]"
     echo ""
     echo "Arguments:"
-    echo "  <versions>  Comma-separated Lua versions (5.1,5.2,5.3,5.4,jit) or 'all'"
+    echo "  <versions>  Comma-separated Lua versions (5.1,5.2,5.3,5.4,5.5,jit) or 'all'"
     echo "  <command>   Either 'lua' or 'luarocks'"
     echo "  [args...]   Arguments to pass to the command"
     echo ""
@@ -44,7 +44,7 @@ fi
 
 # Parse versions
 if [ "$VERSIONS_ARG" = "all" ]; then
-    VERSIONS=("5.1" "5.2" "5.3" "5.4" "jit")
+    VERSIONS=("5.1" "5.2" "5.3" "5.4" "5.5" "jit")
 else
     IFS=',' read -ra VERSIONS <<< "$VERSIONS_ARG"
 fi
