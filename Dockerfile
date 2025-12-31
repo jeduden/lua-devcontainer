@@ -28,7 +28,8 @@ RUN ln -sf /usr/bin/luarocks-5.1 /usr/local/bin/luarocks-5.1 && \
 # Pre-built binaries require glibc which is not available on Alpine
 # Pin to specific release tag for supply-chain security
 ARG LUA_LS_VERSION=3.13.6
-RUN apk add --no-cache --virtual .lls-build-deps ninja-build && \
+RUN apk add --no-cache --virtual .lls-build-deps samurai && \
+    ln -sf /usr/bin/samu /usr/bin/ninja && \
     git clone --depth 1 --branch ${LUA_LS_VERSION} --recurse-submodules https://github.com/LuaLS/lua-language-server.git /tmp/lua-language-server && \
     cd /tmp/lua-language-server && \
     ./make.sh && \
@@ -41,6 +42,7 @@ RUN apk add --no-cache --virtual .lls-build-deps ninja-build && \
     cp -r /tmp/lua-language-server/script /opt/lua-language-server/ && \
     ln -sf /opt/lua-language-server/bin/lua-language-server /usr/local/bin/lua-language-server && \
     rm -rf /tmp/lua-language-server && \
+    rm -f /usr/bin/ninja && \
     apk del .lls-build-deps
 
 # Copy and install vl helper command
