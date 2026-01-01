@@ -59,6 +59,11 @@ COPY --from=lua55-builder /usr/local/bin/luarocks-admin /usr/local/bin/luarocks-
 COPY --from=lua55-builder /usr/local/share/lua/5.5/ /usr/local/share/lua/5.5/
 COPY --from=lua55-builder /usr/local/etc/luarocks/ /usr/local/etc/luarocks/
 
+# Create symlink so luarocks-5.5 can find the Lua 5.5 interpreter
+# (luarocks was configured with --with-lua=/usr/local, so it expects /usr/local/bin/lua)
+RUN ln -sf /usr/local/bin/lua5.5 /usr/local/bin/lua && \
+    ln -sf /usr/local/bin/luac5.5 /usr/local/bin/luac
+
 # Create symlinks for luarocks commands
 RUN ln -sf /usr/bin/luarocks-5.1 /usr/local/bin/luarocks-5.1 && \
     ln -sf /usr/bin/luarocks-5.2 /usr/local/bin/luarocks-5.2 && \
