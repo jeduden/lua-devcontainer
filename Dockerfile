@@ -11,8 +11,10 @@ RUN curl -L -R -O https://www.lua.org/ftp/lua-5.5.0.tar.gz && \
     tar zxf lua-5.5.0.tar.gz && \
     cd lua-5.5.0 && \
     # Build with -fPIC for shared library support
+    # -Wl,-E exports symbols so C modules can find them at runtime
     make -C src CC="gcc -std=gnu99" \
         SYSCFLAGS="-DLUA_USE_LINUX -DLUA_USE_READLINE -fPIC" \
+        SYSLDFLAGS="-Wl,-E" \
         SYSLIBS="-lreadline" \
         all && \
     # Build shared library from object files (before make install)
