@@ -77,9 +77,11 @@ Cflags: -I${includedir}
 EOF
 
 # Create library symlinks and update ldconfig so C modules can find Lua 5.5
+# IMPORTANT: Include system library paths (/lib, /usr/lib) in addition to /usr/local/lib
+# Otherwise curl and other system tools break with "libcurl.so.4: No such file"
 RUN ln -sf /usr/local/lib/liblua5.5.so /usr/local/lib/liblua.so && \
     ln -sf /usr/local/lib/liblua5.5.a /usr/local/lib/liblua.a && \
-    echo "/usr/local/lib" > /etc/ld-musl-x86_64.path
+    echo "/lib:/usr/local/lib:/usr/lib" > /etc/ld-musl-x86_64.path
 
 # Install LuaRocks 3.13.0 for Lua 5.5 (in main image to avoid path issues)
 # LuaRocks 3.13.0+ is required for Lua 5.5 support
