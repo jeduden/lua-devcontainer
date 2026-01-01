@@ -10,21 +10,22 @@ WORKDIR /build
 RUN curl -L -R -O https://www.lua.org/ftp/lua-5.5.0.tar.gz && \
     tar zxf lua-5.5.0.tar.gz && \
     cd lua-5.5.0 && \
-    # Build static library first
+    # Build with -fPIC for shared library support
     make -C src CC="gcc -std=gnu99" \
         SYSCFLAGS="-DLUA_USE_LINUX -DLUA_USE_READLINE -fPIC" \
         SYSLIBS="-lreadline" \
         all && \
-    make INSTALL_TOP=/usr/local install && \
-    # Build shared library for C module support
+    # Build shared library from object files (before make install)
     cd src && \
     gcc -shared -fPIC -o liblua5.5.so \
         lapi.o lcode.o lctype.o ldebug.o ldo.o ldump.o lfunc.o lgc.o llex.o \
         lmem.o lobject.o lopcodes.o lparser.o lstate.o lstring.o ltable.o \
         ltm.o lundump.o lvm.o lzio.o lauxlib.o lbaselib.o lcorolib.o ldblib.o \
         liolib.o lmathlib.o loadlib.o loslib.o lstrlib.o ltablib.o lutf8lib.o \
-        linit.o && \
-    cp liblua5.5.so /usr/local/lib/
+        linit.o -lreadline && \
+    cp liblua5.5.so /usr/local/lib/ && \
+    cd .. && \
+    make INSTALL_TOP=/usr/local install
 
 # Note: LuaRocks for Lua 5.5 will be installed in the main image
 # This avoids path configuration issues with copying binaries between stages
