@@ -85,11 +85,6 @@ RUN curl -L -R -O https://luarocks.org/releases/luarocks-3.13.0.tar.gz && \
     mv /usr/local/bin/luarocks /usr/local/bin/luarocks-5.5 && \
     mv /usr/local/bin/luarocks-admin /usr/local/bin/luarocks-admin-5.5
 
-# Configure LuaRocks 5.5 variables for C module compilation
-RUN /usr/local/bin/luarocks-5.5 config variables.LUA_INCDIR /usr/local/include/lua5.5 && \
-    /usr/local/bin/luarocks-5.5 config variables.LUA_LIBDIR /usr/local/lib && \
-    /usr/local/bin/luarocks-5.5 config variables.LUALIB -llua
-
 # Create symlinks for luarocks commands
 RUN ln -sf /usr/bin/luarocks-5.1 /usr/local/bin/luarocks-5.1 && \
     ln -sf /usr/bin/luarocks-5.2 /usr/local/bin/luarocks-5.2 && \
