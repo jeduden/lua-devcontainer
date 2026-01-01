@@ -10,7 +10,7 @@ WORKDIR /build
 RUN curl -L -R -O https://www.lua.org/ftp/lua-5.5.0.tar.gz && \
     tar zxf lua-5.5.0.tar.gz && \
     cd lua-5.5.0 && \
-    make PLAT=linux-musl INSTALL_TOP=/usr/local all && \
+    make PLAT=linux MYLIBS="-ldl" INSTALL_TOP=/usr/local all && \
     make INSTALL_TOP=/usr/local install
 
 # Download and build LuaRocks for Lua 5.5
