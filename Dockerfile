@@ -46,7 +46,8 @@ COPY --from=lua55-builder /usr/local/bin/luac /usr/local/bin/luac5.5
 COPY --from=lua55-builder /usr/local/lib/liblua.a /usr/local/lib/liblua5.5.a
 COPY --from=lua55-builder /usr/local/include/ /usr/local/include/lua5.5/
 
-# Create pkg-config file for Lua 5.5 so C extensions can find headers/libs
+# Create pkg-config file and library symlink for Lua 5.5
+# C extensions need pkg-config to find headers/libs during compilation
 RUN mkdir -p /usr/lib/pkgconfig && \
     cat > /usr/lib/pkgconfig/lua5.5.pc << 'EOF'
 V=5.5
@@ -63,6 +64,9 @@ Libs: -L${libdir} -llua5.5 -lm
 Cflags: -I${includedir}
 EOF
 
+# Create library symlink so linker can find -llua (some rocks expect this)
+RUN ln -sf /usr/local/lib/liblua5.5.a /usr/local/lib/liblua.a
+
 # Install LuaRocks 3.13.0 for Lua 5.5 (in main image to avoid path issues)
 # LuaRocks 3.13.0+ is required for Lua 5.5 support
 RUN curl -L -R -O https://luarocks.org/releases/luarocks-3.13.0.tar.gz && \
@@ -70,6 +74,7 @@ RUN curl -L -R -O https://luarocks.org/releases/luarocks-3.13.0.tar.gz && \
     cd luarocks-3.13.0 && \
     ./configure --prefix=/usr/local \
         --with-lua-bin=/usr/local/bin \
+        --with-lua-lib=/usr/local/lib \
         --with-lua-include=/usr/local/include/lua5.5 \
         --with-lua-interpreter=lua5.5 \
         --lua-version=5.5 \
