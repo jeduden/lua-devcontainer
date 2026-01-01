@@ -38,6 +38,7 @@ test_command "lua5.1" lua5.1 -e 'print(_VERSION)'
 test_command "lua5.2" lua5.2 -e 'print(_VERSION)'
 test_command "lua5.3" lua5.3 -e 'print(_VERSION)'
 test_command "lua5.4" lua5.4 -e 'print(_VERSION)'
+test_command "lua5.5" lua5.5 -e 'print(_VERSION)'
 test_command "luajit" luajit -e 'print(jit.version)'
 
 echo ""
@@ -49,6 +50,7 @@ test_command "luarocks-5.1" luarocks-5.1 --version
 test_command "luarocks-5.2" luarocks-5.2 --version
 test_command "luarocks-5.3" luarocks-5.3 --version
 test_command "luarocks-5.4" luarocks-5.4 --version
+test_command "luarocks-5.5" luarocks-5.5 --version
 
 echo ""
 echo "----------------------------------------"

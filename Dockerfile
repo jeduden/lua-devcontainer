@@ -1,14 +1,69 @@
+# Build stage for Lua 5.5
+FROM alpine:3.21 AS lua55-builder
+
+# Install build dependencies
+RUN apk add --no-cache \
+    gcc g++ musl-dev make readline-dev curl
+
+# Download and build Lua 5.5 (with shared library for C modules)
+WORKDIR /build
+RUN curl -L -R -O https://www.lua.org/ftp/lua-5.5.0.tar.gz && \
+    tar zxf lua-5.5.0.tar.gz && \
+    cd lua-5.5.0 && \
+    # Build with -fPIC for shared library support
+    # -Wl,-E exports symbols so C modules can find them at runtime
+    make -C src CC="gcc -std=gnu99" \
+        SYSCFLAGS="-DLUA_USE_LINUX -DLUA_USE_READLINE -fPIC" \
+        SYSLDFLAGS="-Wl,-E" \
+        SYSLIBS="-lreadline" \
+        all && \
+    # Build shared library from object files (before make install)
+    cd src && \
+    gcc -shared -fPIC -o liblua5.5.so \
+        lapi.o lcode.o lctype.o ldebug.o ldo.o ldump.o lfunc.o lgc.o llex.o \
+        lmem.o lobject.o lopcodes.o lparser.o lstate.o lstring.o ltable.o \
+        ltm.o lundump.o lvm.o lzio.o lauxlib.o lbaselib.o lcorolib.o ldblib.o \
+        liolib.o lmathlib.o loadlib.o loslib.o lstrlib.o ltablib.o lutf8lib.o \
+        linit.o -lreadline && \
+    cp liblua5.5.so /usr/local/lib/ && \
+    cd .. && \
+    make INSTALL_TOP=/usr/local install && \
+    # Rename lua to lua5.5 so LuaRocks is configured with correct interpreter name
+    mv /usr/local/bin/lua /usr/local/bin/lua5.5 && \
+    mv /usr/local/bin/luac /usr/local/bin/luac5.5 && \
+    # Move headers to lua5.5 subdirectory to match final image layout
+    mkdir -p /usr/local/include/lua5.5 && \
+    mv /usr/local/include/*.h /usr/local/include/lua5.5/
+
+# Build LuaRocks 3.13.0 for Lua 5.5 in the builder stage
+# LuaRocks 3.13.0+ is required for Lua 5.5 support
+WORKDIR /build
+RUN curl -L -R -O https://luarocks.org/releases/luarocks-3.13.0.tar.gz && \
+    tar zxf luarocks-3.13.0.tar.gz && \
+    cd luarocks-3.13.0 && \
+    # Note: --with-lua-include uses the FINAL path in main image (/usr/local/include/lua5.5)
+    ./configure --prefix=/usr/local \
+        --with-lua-bin=/usr/local/bin \
+        --with-lua-lib=/usr/local/lib \
+        --with-lua-include=/usr/local/include/lua5.5 \
+        --with-lua-interpreter=lua5.5 \
+        --lua-version=5.5 \
+        --versioned-rocks-dir && \
+    make && \
+    make install
+
+# Main image
 FROM mcr.microsoft.com/devcontainers/base:alpine
 
 # Install all Lua versions, LuaRocks, and development tools in a single layer
 RUN apk add --no-cache \
-    # All Lua versions
+    # All Lua versions (5.1-5.4 from Alpine repos)
     lua5.1 lua5.1-dev lua5.1-libs \
     lua5.2 lua5.2-dev lua5.2-libs \
     lua5.3 lua5.3-dev lua5.3-libs \
     lua5.4 lua5.4-dev lua5.4-libs \
     luajit luajit-dev \
-    # LuaRocks from Alpine repos (supports all Lua versions)
+    # LuaRocks from Alpine repos (supports Lua 5.1-5.4)
     luarocks5.1 luarocks5.2 luarocks5.3 luarocks5.4 \
     # Development tools (runtime)
     bash git \
@@ -18,7 +73,45 @@ RUN apk add --no-cache \
     cmake ca-certificates \
     pkgconf linux-headers
 
-# Create symlinks for luarocks commands without version suffix
+# Copy Lua 5.5 from builder stage (binaries, headers, static and shared libraries)
+COPY --from=lua55-builder /usr/local/bin/lua5.5 /usr/local/bin/lua5.5
+COPY --from=lua55-builder /usr/local/bin/luac5.5 /usr/local/bin/luac5.5
+COPY --from=lua55-builder /usr/local/lib/liblua.a /usr/local/lib/liblua5.5.a
+COPY --from=lua55-builder /usr/local/lib/liblua5.5.so /usr/local/lib/liblua5.5.so
+COPY --from=lua55-builder /usr/local/include/lua5.5/ /usr/local/include/lua5.5/
+
+# Copy LuaRocks 5.5 from builder stage
+COPY --from=lua55-builder /usr/local/bin/luarocks /usr/local/bin/luarocks-5.5
+COPY --from=lua55-builder /usr/local/bin/luarocks-admin /usr/local/bin/luarocks-admin-5.5
+COPY --from=lua55-builder /usr/local/share/lua/5.5/luarocks /usr/local/share/lua/5.5/luarocks
+COPY --from=lua55-builder /usr/local/etc/luarocks /usr/local/etc/luarocks
+
+# Create pkg-config file and library symlink for Lua 5.5
+# C extensions need pkg-config to find headers/libs during compilation
+RUN mkdir -p /usr/lib/pkgconfig && \
+    cat > /usr/lib/pkgconfig/lua5.5.pc << 'EOF'
+V=5.5
+R=5.5.0
+prefix=/usr/local
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include/lua5.5
+
+Name: Lua
+Description: An Extensible Extension Language
+Version: ${R}
+Libs: -L${libdir} -llua5.5 -lm
+Cflags: -I${includedir}
+EOF
+
+# Create library symlinks and update ldconfig so C modules can find Lua 5.5
+# IMPORTANT: Include system library paths (/lib, /usr/lib) in addition to /usr/local/lib
+# Otherwise curl and other system tools break with "libcurl.so.4: No such file"
+RUN ln -sf /usr/local/lib/liblua5.5.so /usr/local/lib/liblua.so && \
+    ln -sf /usr/local/lib/liblua5.5.a /usr/local/lib/liblua.a && \
+    echo "/lib:/usr/local/lib:/usr/lib" > /etc/ld-musl-x86_64.path
+
+# Create symlinks for luarocks commands
 RUN ln -sf /usr/bin/luarocks-5.1 /usr/local/bin/luarocks-5.1 && \
     ln -sf /usr/bin/luarocks-5.2 /usr/local/bin/luarocks-5.2 && \
     ln -sf /usr/bin/luarocks-5.3 /usr/local/bin/luarocks-5.3 && \
@@ -39,20 +132,24 @@ RUN mkdir -p /usr/local/lib/luarocks/rocks-5.1 \
              /usr/local/lib/luarocks/rocks-5.2 \
              /usr/local/lib/luarocks/rocks-5.3 \
              /usr/local/lib/luarocks/rocks-5.4 \
+             /usr/local/lib/luarocks/rocks-5.5 \
              /usr/local/share/lua/5.1 \
              /usr/local/share/lua/5.2 \
              /usr/local/share/lua/5.3 \
              /usr/local/share/lua/5.4 \
+             /usr/local/share/lua/5.5 \
              /usr/local/lib/lua/5.1 \
              /usr/local/lib/lua/5.2 \
              /usr/local/lib/lua/5.3 \
-             /usr/local/lib/lua/5.4
+             /usr/local/lib/lua/5.4 \
+             /usr/local/lib/lua/5.5
 
 # Install luacov for all Lua versions (as root, before switching user)
 RUN luarocks-5.1 install luacov && \
     luarocks-5.2 install luacov && \
     luarocks-5.3 install luacov && \
-    luarocks-5.4 install luacov
+    luarocks-5.4 install luacov && \
+    luarocks-5.5 install luacov
 
 # Set working directory and ensure vscode user owns it
 WORKDIR /workspace
@@ -69,7 +166,8 @@ USER vscode
 RUN luarocks-5.1 config local_by_default true && \
     luarocks-5.2 config local_by_default true && \
     luarocks-5.3 config local_by_default true && \
-    luarocks-5.4 config local_by_default true
+    luarocks-5.4 config local_by_default true && \
+    luarocks-5.5 config local_by_default true
 
 # Add luarocks local paths to shell profile so user-installed packages are found
 RUN echo 'eval "$(luarocks-5.4 path)"' >> ~/.profile && \
