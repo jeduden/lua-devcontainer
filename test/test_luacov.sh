@@ -38,6 +38,7 @@ test_command "luacov for lua5.1" lua5.1 -e 'require("luacov")'
 test_command "luacov for lua5.2" lua5.2 -e 'require("luacov")'
 test_command "luacov for lua5.3" lua5.3 -e 'require("luacov")'
 test_command "luacov for lua5.4" lua5.4 -e 'require("luacov")'
+test_command "luacov for lua5.5" lua5.5 -e 'require("luacov")'
 test_command "luacov for luajit" luajit -e 'require("luacov")'
 
 echo ""
@@ -50,6 +51,7 @@ test_command "luacov.runner for lua5.1" lua5.1 -e 'require("luacov.runner")'
 test_command "luacov.runner for lua5.2" lua5.2 -e 'require("luacov.runner")'
 test_command "luacov.runner for lua5.3" lua5.3 -e 'require("luacov.runner")'
 test_command "luacov.runner for lua5.4" lua5.4 -e 'require("luacov.runner")'
+test_command "luacov.runner for lua5.5" lua5.5 -e 'require("luacov.runner")'
 test_command "luacov.runner for luajit" luajit -e 'require("luacov.runner")'
 
 echo ""
