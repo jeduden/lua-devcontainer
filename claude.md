@@ -2,6 +2,10 @@
 
 Guidelines for Claude (AI assistant) when working on this project.
 
+## Before Starting
+
+**Verify feasibility first. If a required package/version doesn't exist, tell the user immediately - don't start implementing.**
+
 ## Testing Requirements
 
 ### When to Add Tests
