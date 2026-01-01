@@ -5,16 +5,26 @@ FROM alpine:3.21 AS lua55-builder
 RUN apk add --no-cache \
     gcc g++ musl-dev make readline-dev curl
 
-# Download and build Lua 5.5
+# Download and build Lua 5.5 (with shared library for C modules)
 WORKDIR /build
 RUN curl -L -R -O https://www.lua.org/ftp/lua-5.5.0.tar.gz && \
     tar zxf lua-5.5.0.tar.gz && \
     cd lua-5.5.0 && \
+    # Build static library first
     make -C src CC="gcc -std=gnu99" \
-        SYSCFLAGS="-DLUA_USE_LINUX -DLUA_USE_READLINE" \
+        SYSCFLAGS="-DLUA_USE_LINUX -DLUA_USE_READLINE -fPIC" \
         SYSLIBS="-lreadline" \
         all && \
-    make INSTALL_TOP=/usr/local install
+    make INSTALL_TOP=/usr/local install && \
+    # Build shared library for C module support
+    cd src && \
+    gcc -shared -fPIC -o liblua5.5.so \
+        lapi.o lcode.o lctype.o ldebug.o ldo.o ldump.o lfunc.o lgc.o llex.o \
+        lmem.o lobject.o lopcodes.o lparser.o lstate.o lstring.o ltable.o \
+        ltm.o lundump.o lvm.o lzio.o lauxlib.o lbaselib.o lcorolib.o ldblib.o \
+        liolib.o lmathlib.o loadlib.o loslib.o lstrlib.o ltablib.o lutf8lib.o \
+        linit.o && \
+    cp liblua5.5.so /usr/local/lib/
 
 # Note: LuaRocks for Lua 5.5 will be installed in the main image
 # This avoids path configuration issues with copying binaries between stages
@@ -40,10 +50,11 @@ RUN apk add --no-cache \
     cmake ca-certificates \
     pkgconf linux-headers
 
-# Copy Lua 5.5 from builder stage (only the Lua binaries, headers, and library)
+# Copy Lua 5.5 from builder stage (binaries, headers, static and shared libraries)
 COPY --from=lua55-builder /usr/local/bin/lua /usr/local/bin/lua5.5
 COPY --from=lua55-builder /usr/local/bin/luac /usr/local/bin/luac5.5
 COPY --from=lua55-builder /usr/local/lib/liblua.a /usr/local/lib/liblua5.5.a
+COPY --from=lua55-builder /usr/local/lib/liblua5.5.so /usr/local/lib/liblua5.5.so
 COPY --from=lua55-builder /usr/local/include/ /usr/local/include/lua5.5/
 
 # Create pkg-config file and library symlink for Lua 5.5
@@ -64,8 +75,10 @@ Libs: -L${libdir} -llua5.5 -lm
 Cflags: -I${includedir}
 EOF
 
-# Create library symlink so linker can find -llua (some rocks expect this)
-RUN ln -sf /usr/local/lib/liblua5.5.a /usr/local/lib/liblua.a
+# Create library symlinks and update ldconfig so C modules can find Lua 5.5
+RUN ln -sf /usr/local/lib/liblua5.5.so /usr/local/lib/liblua.so && \
+    ln -sf /usr/local/lib/liblua5.5.a /usr/local/lib/liblua.a && \
+    echo "/usr/local/lib" > /etc/ld-musl-x86_64.path
 
 # Install LuaRocks 3.13.0 for Lua 5.5 (in main image to avoid path issues)
 # LuaRocks 3.13.0+ is required for Lua 5.5 support
