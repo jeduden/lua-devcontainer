@@ -30,7 +30,10 @@ RUN curl -L -R -O https://www.lua.org/ftp/lua-5.5.0.tar.gz && \
     make INSTALL_TOP=/usr/local install && \
     # Rename lua to lua5.5 so LuaRocks is configured with correct interpreter name
     mv /usr/local/bin/lua /usr/local/bin/lua5.5 && \
-    mv /usr/local/bin/luac /usr/local/bin/luac5.5
+    mv /usr/local/bin/luac /usr/local/bin/luac5.5 && \
+    # Move headers to lua5.5 subdirectory to match final image layout
+    mkdir -p /usr/local/include/lua5.5 && \
+    mv /usr/local/include/*.h /usr/local/include/lua5.5/
 
 # Build LuaRocks 3.13.0 for Lua 5.5 in the builder stage
 # LuaRocks 3.13.0+ is required for Lua 5.5 support
@@ -38,10 +41,11 @@ WORKDIR /build
 RUN curl -L -R -O https://luarocks.org/releases/luarocks-3.13.0.tar.gz && \
     tar zxf luarocks-3.13.0.tar.gz && \
     cd luarocks-3.13.0 && \
+    # Note: --with-lua-include uses the FINAL path in main image (/usr/local/include/lua5.5)
     ./configure --prefix=/usr/local \
         --with-lua-bin=/usr/local/bin \
         --with-lua-lib=/usr/local/lib \
-        --with-lua-include=/usr/local/include \
+        --with-lua-include=/usr/local/include/lua5.5 \
         --with-lua-interpreter=lua5.5 \
         --lua-version=5.5 \
         --versioned-rocks-dir && \
@@ -74,7 +78,7 @@ COPY --from=lua55-builder /usr/local/bin/lua5.5 /usr/local/bin/lua5.5
 COPY --from=lua55-builder /usr/local/bin/luac5.5 /usr/local/bin/luac5.5
 COPY --from=lua55-builder /usr/local/lib/liblua.a /usr/local/lib/liblua5.5.a
 COPY --from=lua55-builder /usr/local/lib/liblua5.5.so /usr/local/lib/liblua5.5.so
-COPY --from=lua55-builder /usr/local/include/ /usr/local/include/lua5.5/
+COPY --from=lua55-builder /usr/local/include/lua5.5/ /usr/local/include/lua5.5/
 
 # Copy LuaRocks 5.5 from builder stage
 COPY --from=lua55-builder /usr/local/bin/luarocks /usr/local/bin/luarocks-5.5
