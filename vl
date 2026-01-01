@@ -44,19 +44,13 @@ fi
 
 # Parse versions
 if [ "$VERSIONS_ARG" = "all" ]; then
-    # Dynamically build version list based on what's installed
-    VERSIONS=("5.1" "5.2" "5.3" "5.4")
-    if command -v lua5.5 >/dev/null 2>&1; then
-        VERSIONS+=("5.5")
-    fi
-    VERSIONS+=("jit")
+    VERSIONS=("5.1" "5.2" "5.3" "5.4" "5.5" "jit")
 else
     IFS=',' read -ra VERSIONS <<< "$VERSIONS_ARG"
 fi
 
 FAILED=0
 SUCCESS=0
-SKIPPED=0
 TOTAL=${#VERSIONS[@]}
 
 if [ $TOTAL -gt 1 ]; then
@@ -84,16 +78,6 @@ for VERSION in "${VERSIONS[@]}"; do
             EXECUTABLE="luarocks-${VERSION}"
         fi
         ROCKS_VERSION="$VERSION"
-    fi
-
-    # Skip if executable doesn't exist (e.g., lua5.5 not installed yet)
-    if ! command -v "$EXECUTABLE" >/dev/null 2>&1; then
-        if [ $TOTAL -gt 1 ]; then
-            echo -e "${YELLOW}○ $EXECUTABLE: SKIPPED (not installed)${NC}"
-            echo ""
-        fi
-        SKIPPED=$((SKIPPED + 1))
-        continue
     fi
 
     if [ $TOTAL -gt 1 ]; then
@@ -126,13 +110,9 @@ done
 if [ $TOTAL -gt 1 ]; then
     echo "========================================="
     if [ $FAILED -eq 0 ]; then
-        if [ $SKIPPED -gt 0 ]; then
-            echo -e "${GREEN}Results: $SUCCESS passed, $SKIPPED skipped${NC}"
-        else
-            echo -e "${GREEN}Results: $SUCCESS/$TOTAL passed${NC}"
-        fi
+        echo -e "${GREEN}Results: $SUCCESS/$TOTAL passed${NC}"
     else
-        echo -e "${RED}Results: $SUCCESS passed, $FAILED failed, $SKIPPED skipped${NC}"
+        echo -e "${RED}Results: $SUCCESS passed, $FAILED failed${NC}"
     fi
     echo "========================================="
 fi
