@@ -17,9 +17,10 @@ RUN curl -L -R -O https://www.lua.org/ftp/lua-5.5.0.tar.gz && \
     make INSTALL_TOP=/usr/local install
 
 # Download and build LuaRocks for Lua 5.5
-RUN curl -L -R -O https://luarocks.org/releases/luarocks-3.11.1.tar.gz && \
-    tar zxf luarocks-3.11.1.tar.gz && \
-    cd luarocks-3.11.1 && \
+# LuaRocks 3.13.0+ is required for Lua 5.5 support
+RUN curl -L -R -O https://luarocks.org/releases/luarocks-3.13.0.tar.gz && \
+    tar zxf luarocks-3.13.0.tar.gz && \
+    cd luarocks-3.13.0 && \
     ./configure --prefix=/usr/local \
         --with-lua=/usr/local \
         --lua-version=5.5 \
